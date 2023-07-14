@@ -1,0 +1,4 @@
+name: ActionBarXtreme
+version: '${project.version}'
+main: com.me.actionbarxtreme.ActionBarXtreme
+api-version: '1.20'
