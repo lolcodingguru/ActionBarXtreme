@@ -9,37 +9,36 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 public class ActionBarXtreme extends JavaPlugin {
-    private List<ChatColor> colors;
+    public BukkitTask task;
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
+
         getCommand("abx").setExecutor(new maincmd(this));
 
         PermActionBar permActionBar = new PermActionBar(this);
-        colors = permActionBar.loadColorsFromConfig();
-
-        if (colors.isEmpty()) {
-            getLogger().warning("No colors defined in configuration file. Action bar may not work properly.");
-            return;
-        }
+        permActionBar.start();
+        List<ChatColor> colors = permActionBar.loadColorsFromConfig();
 
         Bukkit.getLogger().info("ActionBarXtreme has been successfully enabled!");
-        getServer().getScheduler().runTaskTimer(this, permActionBar, 0, getConfig().getInt("duration")); // Every how many ticks
+
     }
 
     public class PermActionBar implements Runnable {
-        private BukkitTask task;
-        private ActionBarXtreme plugin;
-        public boolean enabled = getConfig().getBoolean("EnablePermanentActionBar"); // Toggle variable in config (false is default)
+        private final ActionBarXtreme plugin;
+        public boolean enabled = getConfig().getBoolean("EnablePermanentActionBar");
         private int tickCounter = 0;
-
         List<ChatColor> colors;
+
+
 
         public List<ChatColor> loadColorsFromConfig() {
             List<ChatColor> colorList = new ArrayList<>();
@@ -49,7 +48,7 @@ public class ActionBarXtreme extends JavaPlugin {
                     ChatColor color = ChatColor.valueOf(colorString.toUpperCase().replace(" ", "_"));
                     colorList.add(color);
                 } catch (IllegalArgumentException e) {
-                    // Invalid color string, ignore it
+
                 }
             }
             return colorList;
@@ -58,6 +57,26 @@ public class ActionBarXtreme extends JavaPlugin {
         public PermActionBar(ActionBarXtreme plugin) {
             this.plugin = plugin;
             this.colors = loadColorsFromConfig();
+        }
+
+        public void start() {
+            task = getServer().getScheduler().runTaskTimer(plugin, this, 0, getConfig().getInt("duration"));
+        }
+
+        public void stop() {
+            if (task != null) {
+                task.cancel();
+                task = null;
+            }
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+            if (enabled) {
+                start();
+            } else {
+                stop();
+            }
         }
 
         String actionBarMessage = formatActionBarMessage(
@@ -97,20 +116,20 @@ public class ActionBarXtreme extends JavaPlugin {
         public void run () {
 
             if (!enabled) {
-                return; // If the toggle is off, do nothing
-            }
-
-            if (colors.isEmpty()) {
-                getLogger().warning("No colors defined in configuration file. Action bar may not work properly.");
                 return;
             }
-            // Select color based on tick counter
+
+            if(colors.isEmpty()){
+                Bukkit.getLogger().log(Level.SEVERE, "[ABX] Color list is empty in configuration file. Please add at least 1 color before restarting. Disabling Plugin to prevent crash and errors.");
+                Bukkit.getPluginManager().disablePlugin(plugin);
+                return;
+            }
+
+
             ChatColor color = colors.get(tickCounter % colors.size());
 
-            // Increment tick counter
-            tickCounter++;
 
-            // Send the action bar message to all players with the selected color
+            tickCounter++;
 
             for (Player player : plugin.getServer().getOnlinePlayers()) {
 
@@ -119,29 +138,12 @@ public class ActionBarXtreme extends JavaPlugin {
 
             }
         }
-
-        public void start() {
-            // Schedule the task and hold a reference to the returned BukkitTask object
-            task = plugin.getServer().getScheduler().runTaskTimer(plugin, this, 0, plugin.getConfig().getInt("duration"));
-        }
-        public void stop() {
-            // Cancel the task if it's running
-            if (task != null) {
-                Bukkit.getLogger().info("[ABX] Detected ActionBar still running! Disabling...");
-                task.cancel();
-                Bukkit.getLogger().info("[ABX] ActionBar disabled.");
-                task = null;
-            }
-        }
-
-
     }
 
     @Override
     public void onDisable () {
-        PermActionBar PermActionBar = new PermActionBar(this);
-        PermActionBar.stop();
-
+        PermActionBar permActionBar = new PermActionBar(this);
+        permActionBar.setEnabled(false);
         Bukkit.getLogger().info("ActionBarXtreme has been successfully disabled.");
     }
 

@@ -6,7 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class maincmd implements CommandExecutor {
 
@@ -22,9 +21,13 @@ public class maincmd implements CommandExecutor {
             if (strings[0].equalsIgnoreCase("reload")) {
                 if(commandSender.hasPermission("abx.reload")) {
 
+                    if(plugin.task!=null) {
+                        plugin.task.cancel();
+                    }
+                    plugin.reloadConfig();
                     plugin.getPluginLoader().disablePlugin(plugin);
                     plugin.getPluginLoader().enablePlugin(plugin);
-                    commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + "" + ChatColor.GREEN + "Plugin sucessfully reloaded.");
+                    commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + ChatColor.GREEN + "Plugin sucessfully reloaded.");
                     Bukkit.getLogger().info("[ABX] Plugin was reloaded");
                 } else {
                     commandSender.sendMessage(ChatColor.RED + "Insuffiecient Permission.");
@@ -32,19 +35,20 @@ public class maincmd implements CommandExecutor {
             } else if(strings[0].equalsIgnoreCase("togglebar")) {
                 if(commandSender.hasPermission("abx.togglebar")) {
                     boolean enableActionBar = plugin.getConfig().getBoolean("EnablePermanentActionBar");
+
                     plugin.getConfig().set("EnablePermanentActionBar", !enableActionBar);
                     plugin.saveConfig();
 
                     if (!enableActionBar) {
-                        commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + "" + ChatColor.GREEN + "Enabled ActionBar! Reload plugin for changes to appear.");
+                        commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + ChatColor.GREEN + "Enabled ActionBar! Reload plugin for changes to appear.");
                     } else {
-                        commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + "" + ChatColor.GREEN + "Disabled ActionBar! Reload plugin for changes to appear.");
+                        commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + ChatColor.GREEN + "Disabled ActionBar! Reload plugin for changes to appear.");
                     }
                 } else {
                     commandSender.sendMessage(ChatColor.RED + "Insuffiecient Permission.");
                 }
             } else {
-                commandSender.sendMessage(ChatColor.AQUA + "Available Commands:\n/abx reload - Reloads the config file.\n/abx togglebar - Toggles the ActionBar.");
+                commandSender.sendMessage(ChatColor.AQUA + "Available Commands:\n/abx reload - Reloads the plugin.\n/abx togglebar - Toggles the ActionBar.");
             }
         } else {
             commandSender.sendMessage(ChatColor.AQUA + "Available Commands:\n/abx reload\n/abx togglebar");
