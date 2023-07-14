@@ -1,0 +1,22 @@
+EnablePermanentActionBar: false # Options: true/false , toggle the permanent action bar that is always displayed to all players.
+actionBarMessage: PLAY.SERVERNAME.NET # The message that should be used in the action bar.
+duration: 6 # Every how many ticks should the action bar appear? For it to be permanent, it must be no more than 40. If you are using alternating colors, then keep at default.
+
+isBold: true # Whether the message is bold or not.
+isItalic: false # Whether the message is Italic or not.
+isUnderline: true # Where the message is underlined or not.
+isStrikethrough: false # Whether the message is strikethrough or not.
+isMagic: false # Whether the message has the magic feature or not (Makes the text not readable, not recommeneded.)
+
+# IMPORTANT: If you do not want any colors, please set it to only white to ensure the message is still displayed just in-case.
+# If more than one color is given, it will alternate between those colors every many ticks that is set in duration.
+# Please find the full list of available colors here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
+ChatColor: # If more than one color is given, it will alternate between those colors every many ticks that is set in duration.
+  - GREEN
+  - YELLOW
+  - AQUA
+  - LIGHT_PURPLE
+  - RED
+  - BLUE
+  - WHITE
+  - MAGIC
