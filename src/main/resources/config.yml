@@ -8,7 +8,7 @@ isUnderline: false
 isStrikethrough: false
 isMagic: false
 
-# IMPORTANT: If you do not want any colors, please set it to only white otherwise the plugin WILL break!! There must be
+# IMPORTANT: If you do not want any colors, please set it to only white otherwise the plugin WILL break!! There must be at least one color listed at all times
 # If more than one color is given, it will alternate between those colors every many ticks that is set in duration.
 # Please find the full list of available colors here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
 ChatColor:
