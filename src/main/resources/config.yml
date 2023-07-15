@@ -1,6 +1,6 @@
 EnablePermanentActionBar: false
 actionBarMessage: "PLAY.SERVERNAME.NET"
-duration: 6 # Every how many ticks should the action bar appear? For it to be permanent, it must be no more than 40. If you are using alternating colors, then keep at default.
+duration: 6 # Every how many ticks should the action bar appear? For it to be permanent, it must be no more than 40. 20 ticks = 1 real second
 
 isBold: true
 isItalic: false

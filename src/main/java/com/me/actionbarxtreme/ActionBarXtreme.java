@@ -21,7 +21,6 @@ public class ActionBarXtreme extends JavaPlugin {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
-
         getCommand("abx").setExecutor(new maincmd(this));
 
         PermActionBar permActionBar = new PermActionBar(this);
