@@ -36,7 +36,7 @@ public class maincmd implements CommandExecutor {
                 commandSender.sendMessage(ChatColor.AQUA + "Available Commands:\n/abx reload - Reloads the plugin.");
             }
         } else {
-            commandSender.sendMessage(ChatColor.AQUA + "Available Commands:\n/abx reload");
+            commandSender.sendMessage(ChatColor.AQUA + "Available Commands:\n/abx reload - Reloads the plugin");
         }
         return false;
     }

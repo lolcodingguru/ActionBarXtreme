@@ -3,41 +3,60 @@ package com.me.actionbarxtreme;
 import com.me.actionbarxtreme.commands.maincmd;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.logging.Level;
 
-public class ActionBarXtreme extends JavaPlugin {
+public class ActionBarXtreme extends JavaPlugin implements  Listener {
     public BukkitTask task;
+    public PermActionBar permActionBar;
+
+
+
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
         getCommand("abx").setExecutor(new maincmd(this));
+        Bukkit.getPluginManager().registerEvents(this, this);
 
-        PermActionBar permActionBar = new PermActionBar(this);
-        permActionBar.start();
+        this.permActionBar = new PermActionBar(this);
         List<ChatColor> colors = permActionBar.loadColorsFromConfig();
+
+        permActionBar.start();
 
         Bukkit.getLogger().info("ActionBarXtreme has been successfully enabled!");
 
+        new updateCheck(this, 111234).getLatestVersion(version -> {
+            Bukkit.getLogger().info("Asking Spigot API if ActionBarXtreme (ABX) is up to date?...");
+            if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                Bukkit.getLogger().info("Spigot API says ABX is up to date.");
+            } else {
+                Bukkit.getLogger().warning("Spigot API says ABX is outdated! Newest version: " + version + ", Your version: " + getDescription().getVersion() + ", Please Update Here: https://www.spigotmc.org/resources/111234");
+
+        	}
+        });
+
+
     }
+
 
     public class PermActionBar implements Runnable {
         private final ActionBarXtreme plugin;
         public boolean enabled = getConfig().getBoolean("EnablePermanentActionBar");
         private int tickCounter = 0;
         List<ChatColor> colors;
-
-
 
         public List<ChatColor> loadColorsFromConfig() {
             List<ChatColor> colorList = new ArrayList<>();
@@ -60,6 +79,7 @@ public class ActionBarXtreme extends JavaPlugin {
 
         public void start() {
             task = getServer().getScheduler().runTaskTimer(plugin, this, 0, getConfig().getInt("duration"));
+
         }
 
         public void stop() {
@@ -112,6 +132,7 @@ public class ActionBarXtreme extends JavaPlugin {
             return sb.toString();
         }
 
+
         public void run () {
 
             if (!enabled) {
@@ -124,11 +145,10 @@ public class ActionBarXtreme extends JavaPlugin {
                 return;
             }
 
-
             ChatColor color = colors.get(tickCounter % colors.size());
 
-
             tickCounter++;
+
 
             for (Player player : plugin.getServer().getOnlinePlayers()) {
 
@@ -141,7 +161,6 @@ public class ActionBarXtreme extends JavaPlugin {
 
     @Override
     public void onDisable () {
-        PermActionBar permActionBar = new PermActionBar(this);
         permActionBar.setEnabled(false);
         Bukkit.getLogger().info("ActionBarXtreme has been successfully disabled.");
     }

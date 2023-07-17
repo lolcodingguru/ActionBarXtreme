@@ -1,5 +1,8 @@
-EnablePermanentActionBar: false
-actionBarMessage: "PLAY.SERVERNAME.NET"
+messageOnPlayerJoin: true
+playerJoinMessage: '§4Welcome!'
+
+EnablePermanentActionBar: false #
+actionBarMessage: "PLAY.SERVERNAME.NET" # "§" Color codes are supported, note that color codes will override the color list below, meaning you can not use the alternating color feature if you use color codes.
 duration: 6 # Every how many ticks should the action bar appear? For it to be permanent, it must be no more than 40. 20 ticks = 1 real second
 
 isBold: true
