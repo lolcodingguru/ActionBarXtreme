@@ -1,5 +1,6 @@
-package com.me.actionbarxtreme;
+package com.me.actionbarxtreme.utils;
 
+import com.me.actionbarxtreme.ActionBarXtreme;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;

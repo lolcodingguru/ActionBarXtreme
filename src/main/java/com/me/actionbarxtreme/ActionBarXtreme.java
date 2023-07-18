@@ -1,35 +1,34 @@
 package com.me.actionbarxtreme;
 
 import com.me.actionbarxtreme.commands.maincmd;
+import com.me.actionbarxtreme.handlers.playerBanAnnounceEvent;
+import com.me.actionbarxtreme.utils.updateCheck;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-
 
 import java.util.*;
 import java.util.logging.Level;
 
-public class ActionBarXtreme extends JavaPlugin implements  Listener {
+public class ActionBarXtreme extends JavaPlugin {
     public BukkitTask task;
+    public playerBanAnnounceEvent playerBanAnnounceEvent;
     public PermActionBar permActionBar;
-
-
 
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
-        getCommand("abx").setExecutor(new maincmd(this));
-        Bukkit.getPluginManager().registerEvents(this, this);
+        playerBanAnnounceEvent = new playerBanAnnounceEvent(this);
+
+        maincmd commandExecutor = new maincmd(this, new permBarOverrideAnnounce(ActionBarXtreme.this));
+        getCommand("abx").setExecutor(commandExecutor);
+        Bukkit.getPluginManager().registerEvents(new playerBanAnnounceEvent(this), this);
 
         this.permActionBar = new PermActionBar(this);
         List<ChatColor> colors = permActionBar.loadColorsFromConfig();
@@ -47,10 +46,7 @@ public class ActionBarXtreme extends JavaPlugin implements  Listener {
 
         	}
         });
-
-
     }
-
 
     public class PermActionBar implements Runnable {
         private final ActionBarXtreme plugin;
