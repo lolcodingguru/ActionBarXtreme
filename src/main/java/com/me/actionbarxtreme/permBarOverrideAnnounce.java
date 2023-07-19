@@ -3,13 +3,14 @@ package com.me.actionbarxtreme;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 public class permBarOverrideAnnounce implements Runnable {
 
-    private ActionBarXtreme plugin;
+    private final ActionBarXtreme plugin;
     private String message;
     private BukkitTask task;
     private TextComponent component;
@@ -42,8 +43,12 @@ public class permBarOverrideAnnounce implements Runnable {
         task = plugin.getServer().getScheduler().runTaskTimer(plugin, this, 0, 1);
         Bukkit.getLogger().info("Announce task started!");
 
-        message = message.replaceAll("&", "§");
-        component = new TextComponent(TextComponent.fromLegacyText(message));
+        if (plugin.LegacyColors) {
+            component = new TextComponent(ChatColor.translateAlternateColorCodes('&', message));
+        } else {
+            message = message.replaceAll("&", "§");
+            component = new TextComponent(message);
+        }
 
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
@@ -63,7 +68,9 @@ public class permBarOverrideAnnounce implements Runnable {
         }
 
         duration--;
+        Bukkit.getLogger().info("Debug message: " + duration + " ticks left.");
         if (duration <= 0) {
+            Bukkit.getLogger().info("Reached " + duration + " ticks. Cancelling task.");
             task.cancel();
             plugin.permActionBar.start();
             Bukkit.getLogger().info("STOPPED ANNOUNCE TASK! PERMANENT TASK RESTARTED!");

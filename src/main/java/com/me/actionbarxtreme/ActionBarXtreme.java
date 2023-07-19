@@ -1,6 +1,7 @@
 package com.me.actionbarxtreme;
 
 import com.me.actionbarxtreme.commands.maincmd;
+import com.me.actionbarxtreme.commands.testCommand;
 import com.me.actionbarxtreme.handlers.playerBanAnnounceEvent;
 import com.me.actionbarxtreme.utils.updateCheck;
 import org.bukkit.Bukkit;
@@ -18,15 +19,31 @@ public class ActionBarXtreme extends JavaPlugin {
     public BukkitTask task;
     public playerBanAnnounceEvent playerBanAnnounceEvent;
     public PermActionBar permActionBar;
+    public boolean LegacyColors = false;
 
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
+        String serverVersion = Bukkit.getVersion();
+
+        if (serverVersion.contains("1.7") || serverVersion.contains("1.8")) {
+            Bukkit.getLogger().log(Level.SEVERE, "[ABX] Detected unsupported version " + serverVersion + ". Disabling plugin to prevent fatal errors and crashes." +
+                    "\n If you are not on 1.8 or below, this is a bug! Please report it");
+            Bukkit.getPluginManager().disablePlugin(this);
+        } else if (serverVersion.contains("1.9") || serverVersion.contains("1.10") || serverVersion.contains("1.11")) {
+            LegacyColors = true;
+            Bukkit.getLogger().warning( "[ABX] Detecting legacy supported version " + serverVersion + ". Alternating Colors are not supported. " +
+                    "\n If you are not on 1.9-1.11, this is a bug! Please report it");
+        }
+
+
         playerBanAnnounceEvent = new playerBanAnnounceEvent(this);
 
+        testCommand commandExecuter1 = new testCommand(this);
         maincmd commandExecutor = new maincmd(this, new permBarOverrideAnnounce(ActionBarXtreme.this));
+        getCommand("testCommand").setExecutor(commandExecuter1);
         getCommand("abx").setExecutor(commandExecutor);
         Bukkit.getPluginManager().registerEvents(new playerBanAnnounceEvent(this), this);
 
@@ -101,9 +118,26 @@ public class ActionBarXtreme extends JavaPlugin {
                 getConfig().getBoolean("isStrikethrough"),
                 getConfig().getBoolean("isMagic"));
 
-        public String getActionBarMessage() {
-            return this.actionBarMessage;
+        public TextComponent getActionBarMessage() {
+
+            if (plugin.LegacyColors) {
+                return new TextComponent(ChatColor.translateAlternateColorCodes('&', this.actionBarMessage));
+            } else
+
+            if(colors.isEmpty()){
+                Bukkit.getLogger().log(Level.SEVERE, "[ABX] Color list is empty in configuration file. Please add at least 1 color before restarting. Disabling Plugin to prevent crash and errors.");
+                Bukkit.getPluginManager().disablePlugin(plugin);
+            }
+
+            ChatColor color = colors.get(tickCounter % colors.size());
+
+            tickCounter++;
+
+            this.actionBarMessage = this.actionBarMessage.replaceAll("&", "§");
+            return new TextComponent(TextComponent.fromLegacyText(color + this.actionBarMessage));
         }
+
+
 
         private String formatActionBarMessage(boolean isBold, boolean isItalic, boolean isUnderline, boolean isStrikeThrough, boolean isMagic) {
             StringBuilder sb = new StringBuilder();
@@ -129,27 +163,15 @@ public class ActionBarXtreme extends JavaPlugin {
         }
 
 
+        @Override
         public void run () {
 
             if (!enabled) {
                 return;
             }
 
-            if(colors.isEmpty()){
-                Bukkit.getLogger().log(Level.SEVERE, "[ABX] Color list is empty in configuration file. Please add at least 1 color before restarting. Disabling Plugin to prevent crash and errors.");
-                Bukkit.getPluginManager().disablePlugin(plugin);
-                return;
-            }
-
-            ChatColor color = colors.get(tickCounter % colors.size());
-
-            tickCounter++;
-
-
             for (Player player : plugin.getServer().getOnlinePlayers()) {
-
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(color + getActionBarMessage()));
-
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getActionBarMessage());
 
             }
         }

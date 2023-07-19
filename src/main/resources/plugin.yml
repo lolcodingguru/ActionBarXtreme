@@ -6,4 +6,6 @@ commands:
   abx:
     description: View command list.
     aliases: []
-
+  testCommand:
+    description: Test command.
+    aliases: []
