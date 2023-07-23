@@ -1,25 +1,174 @@
-messageOnPlayerJoin: true
-playerJoinMessage: '§4Welcome!'
+# ============================================
+# ||            Configuration File            ||
+# ============================================
 
-EnablePermanentActionBar: false #
-actionBarMessage: "PLAY.SERVERNAME.NET" # "§" Color codes are supported, note that color codes will override the color list below, meaning you can not use the alternating color feature if you use color codes.
-duration: 6 # Every how many ticks should the action bar appear? For it to be permanent, it must be no more than 40. 20 ticks = 1 real second
+# ============[ Global Settings ]===========
+# -------------------------------------------------------
+# ||  Prefix that will appear before every    ||
+# ||  announcement (event-triggered and       ||
+# ||       using announce commands).          ||
+# ||       For no prefix, leave as ""         ||
+# -------------------------------------------------------
+prefix: "&4&l[Broadcast]&c "
 
-isBold: true
-isItalic: false
-isUnderline: false
-isStrikethrough: false
-isMagic: false
+# ============[ Permanent Action Bar ]===========
+PermanentActionBar:
+  # -------------------------------------------------------
+  # ||               Enable/Disable                ||
+  # -------------------------------------------------------
+  Enable: false
+  
+  # -------------------------------------------------------
+  # ||                 Message                     ||
+  # ||   Color codes are supported (&4, &c, etc.)  ||
+  # ||   Using color codes will override and       ||
+  # ||    disable the alternating colors feature.  ||
+  # -------------------------------------------------------
+  actionBarMessage: PLAY.SERVERNAME.NET
+  
+  # -------------------------------------------------------
+  # ||    Duration (in ticks) 20 ticks = 1 second  ||
+  # ||       In other words, every how often the   ||
+  # ||     actionbar alternates between colors.    ||
+  # -------------------------------------------------------
+  duration: 6
+  
+  # -------------------------------------------------------
+  # ||             Message Styles                  ||
+  # ||        More than one can be enabled.        ||
+  # -------------------------------------------------------
+  MessageStyles:
+    isBold: true
+    isItalic: false
+    isUnderline: false
+    isStrikethrough: false
+    isMagic: false
+  
+  # -------------------------------------------------------
+  # ||               Alternating Colors            ||
+  # ||          Disabled for versions 1.9-1.11     ||
+  # ||      Simply leave WHITE or just one color   ||
+  # ||       if you dont want alternating colors.  ||
+  # ||       You can add as many as you want       ||
+  # -------------------------------------------------------
+  # Find the full color list here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
+  ChatColor:
+    - YELLOW
+    - AQUA
+    - LIGHT_PURPLE
+    - RED
+    - BLUE
+    - WHITE
+    - MAGIC
 
-# IMPORTANT: If you do not want any colors, please set it to only white otherwise the plugin WILL break!! There must be at least one color listed at all times
-# If more than one color is given, it will alternate between those colors every many ticks that is set in duration.
-# Please find the full list of available colors here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
-ChatColor:
-  - GREEN
-  - YELLOW
-  - AQUA
-  - LIGHT_PURPLE
-  - RED
-  - BLUE
-  - WHITE
-  - MAGIC
+# ===================[ Events ]====================
+# Please note that duration here is in seconds, not ticks!
+# As usual, color codes are supported (&4, &c, etc.)
+# -------------------------------------------------------
+Events:
+  # -------------------------------------------------------
+  # ||          On Player Ban Event                 ||
+  # -------------------------------------------------------
+  OnPlayerBan:
+    Enable: false
+    Message: "A player was just banned from the server. Don't Cheat!"
+    Duration: 5
+    allowForceEvent: true
+
+  # -------------------------------------------------------
+  # ||          On Player Kick Event                     ||
+  # -------------------------------------------------------
+  OnPlayerKick:
+    Enable: false
+    Message: "A player has been kicked from the server."
+    Duration: 10
+    allowForceEvent: true
+
+  # -------------------------------------------------------
+  # ||          On Dragon Death Event                ||
+  # -------------------------------------------------------
+  OnDragonDeath:
+    Enable: false
+    Message: "The Ender Dragon has been defeated!"
+    Duration: 10
+    allowForceEvent: true
+
+  # -------------------------------------------------------
+  # ||          On Dragon Respawn Event                  ||
+  # -------------------------------------------------------
+  OnDragonRespawn:
+    Enable: false
+    Message: "The Ender Dragon has respawned!"
+    Duration: 10
+    allowForceEvent: true
+
+  # -------------------------------------------------------
+  # ||          On Elder Guardian Death Event            ||
+  # -------------------------------------------------------
+  OnElderGuardianDeath:
+    Enable: false
+    Message: "An Elder Guardian has been defeated!"
+    Duration: 10
+    allowForceEvent: true
+  # -------------------------------------------------------
+  # ||          On Player Killed Player Event            ||
+  # ||          This is the only event where             ||
+  # ||           placeholders are supported!             ||
+  # ||          %killer% - Player that killed.           ||
+  # ||         %killed% - Player that was killed.        ||
+  # -------------------------------------------------------
+  OnPlayerKilledPlayer:
+    Enable: false
+    Message: "%killed% was killed by %killer%"
+    Duration: 10
+    allowForceEvent: true
+
+  # -------------------------------------------------------
+  # ||          On Warden Death Event                    ||
+  # -------------------------------------------------------
+  OnWardenDeath:
+    Enable: false
+    Message: "A Warden has been defeated!"
+    Duration: 10
+    allowForceEvent: true
+
+  # -------------------------------------------------------
+  # ||          On Wither Death Event                    ||
+  # -------------------------------------------------------
+  OnWitherDeath:
+    Enable: false
+    Message: "The Wither has been defeated!"
+    Duration: 10
+    allowForceEvent: true
+
+# ===============[ Actionbar Announcements (/abx announce) ]=================
+Announcements:
+  # -------------------------------------------------------
+  # ||               Enable/Disable                ||
+  # -------------------------------------------------------
+  EnableAnnouncements: true
+
+  # -------------------------------------------------------
+  # ||               Default Duration              ||
+  # ||   The Duration for an announcement can be   ||
+  # ||     set in the command, but this is the     ||
+  # ||        default duration if the duration     ||
+  # ||           argument was left blank           ||
+  # -------------------------------------------------------
+  defaultDuration: 5
+
+# =======================================================
+# ||                   Configuration File                ||
+# =======================================================
+#
+#          Thank you for using ActionBarXtreme!
+#         If you like the plugin, please consider
+#            leaving a rating on SpigotMC:
+#       https://www.spigotmc.org/resources/111234/
+#
+# =======================================================
+# If you encounter any bugs or issues, please report them
+# on the plugin's GitHub repository.
+#
+# This is the end of the configuration file.
+# Any changes made beyond this point may cause errors.

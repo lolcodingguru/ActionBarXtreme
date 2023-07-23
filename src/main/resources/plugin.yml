@@ -6,6 +6,9 @@ commands:
   abx:
     description: View command list.
     aliases: []
-  testCommand:
+  wavyactionbar:
     description: Test command.
+    aliases: []
+  testcommand:
+    description: Test command2.
     aliases: []
