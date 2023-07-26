@@ -13,18 +13,17 @@
 package com.me.actionbarxtreme;
 
 import com.me.actionbarxtreme.barMethods.permBarOverrideAnnounce;
-import com.me.actionbarxtreme.commands.eventForce;
+//import com.me.actionbarxtreme.commands.eventForce;
 import com.me.actionbarxtreme.commands.maincmd;
-import com.me.actionbarxtreme.handlers.onPlayerKick;
-import com.me.actionbarxtreme.handlers.onDragonDeath;
-import com.me.actionbarxtreme.handlers.onPlayerBan;
+//import com.me.actionbarxtreme.handlers.onPlayerKick;
+//import com.me.actionbarxtreme.handlers.onDragonDeath;
+//import com.me.actionbarxtreme.handlers.onPlayerBan;
 import com.me.actionbarxtreme.utils.logging;
 import com.me.actionbarxtreme.utils.updateCheck;
-import com.me.actionbarxtreme.handlers.onDragonRespawn;
-import com.me.actionbarxtreme.handlers.onWitherDeath;
-import com.me.actionbarxtreme.handlers.onElderGuardianDeath;
-import com.me.actionbarxtreme.handlers.onWardenDeath;
-import com.me.actionbarxtreme.handlers.onPlayerKilledPlayer;
+//import com.me.actionbarxtreme.handlers.onWitherDeath;
+//import com.me.actionbarxtreme.handlers.onElderGuardianDeath;
+//import com.me.actionbarxtreme.handlers.onWardenDeath;
+//import com.me.actionbarxtreme.handlers.onPlayerKilledPlayer;
 import com.me.actionbarxtreme.utils.tabComplete;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import org.bukkit.Bukkit;
@@ -43,18 +42,17 @@ import java.util.*;
 
 public class ActionBarXtreme extends JavaPlugin {
     public BukkitTask task;
-    public onPlayerKick onPlayerKick;
+/*    public onPlayerKick onPlayerKick;
     public onPlayerBan onPlayerBan;
     public onDragonDeath onDragonDeath;
-    public PermActionBar permActionBar;
-    public onDragonRespawn onDragonRespawn;
     public onWitherDeath onWitherDeath;
     public onElderGuardianDeath onElderGuardianDeath;
     public onWardenDeath onWardenDeath;
     public onPlayerKilledPlayer onPlayerKilledPlayer;
+
+ */
     public permBarOverrideAnnounce permBarOverrideAnnounce;
-
-
+    public PermActionBar permActionBar;
     public boolean LegacyColors = false;
     public boolean wardenSupported = false;
 
@@ -103,50 +101,53 @@ public class ActionBarXtreme extends JavaPlugin {
 
         String serverVersion = Bukkit.getVersion();
 
-        if (serverVersion.contains("1.7") || serverVersion.contains("1.8")) {
+        if (serverVersion.contains("1.7") || serverVersion.contains("1.8") || serverVersion.contains("1.9")) {
             logging.log(logging.LogLevel.ERROR, "[ABX] Detected unsupported version " + serverVersion + ". Disabling plugin to prevent fatal errors and crashes." +
-                    "\n If you are not on 1.8 or below, this is a bug! Please report it");
+                    "\n If you are not on 1.9.x or below, this is a bug! Please report it");
             logging.log(logging.LogLevel.OUTLINE, "*****************************************************************");
             Bukkit.getPluginManager().disablePlugin(this);
-        } else if (serverVersion.contains("1.9") || serverVersion.contains("1.10") || serverVersion.contains("1.11") || serverVersion.contains("1.12")) {
-
+            return;
+        } else if (serverVersion.contains("1.10") || serverVersion.contains("1.11")) {
             LegacyColors = true;
             logging.log(logging.LogLevel.WARNING , "[ABX] Detecting legacy supported version " + serverVersion + ". Alternating Colors are not supported. " +
-                    "\n If you are not on 1.9-1.11, this is a bug! Please report it");
+                    "\n If you are not on 1.10.x-1.11.x, this is a bug! Please report it");
         }
 
         permBarOverrideAnnounce permBarOverrideAnnounce = new permBarOverrideAnnounce(ActionBarXtreme.this);
 
-        onPlayerBan = new onPlayerBan(this, permBarOverrideAnnounce);
+/*        onPlayerBan = new onPlayerBan(this, permBarOverrideAnnounce);
         onDragonDeath = new onDragonDeath(this, permBarOverrideAnnounce);
-        onDragonRespawn = new onDragonRespawn(this, permBarOverrideAnnounce);
         onWitherDeath = new onWitherDeath(this, permBarOverrideAnnounce);
         onPlayerKick = new onPlayerKick(this, permBarOverrideAnnounce);
         onElderGuardianDeath = new onElderGuardianDeath(this, permBarOverrideAnnounce);
         onWardenDeath = new onWardenDeath(this, permBarOverrideAnnounce);
         onPlayerKilledPlayer = new onPlayerKilledPlayer(this, permBarOverrideAnnounce);
+
+ */
         tabComplete tabComplete = new tabComplete();
 
 
-        logging.log(logging.LogLevel.INFO, "[ABX] Loading events and commands...");
+        logging.log(logging.LogLevel.INFO, "[ABX] Loading"/* + "events and" */+ " commands...");
 
         CommandExecutor MainCommandExectuer = new maincmd(this, new permBarOverrideAnnounce
-                (ActionBarXtreme.this), new eventForce(this,
-                onPlayerBan, onDragonRespawn, onDragonDeath, onWitherDeath, onPlayerKick,
-                onElderGuardianDeath, onWardenDeath, onPlayerKilledPlayer));
+                (ActionBarXtreme.this)/*, new eventForce(this,
+                onPlayerBan, onDragonDeath, onWitherDeath, onPlayerKick,
+                onElderGuardianDeath, onWardenDeath, onPlayerKilledPlayer)*/);
 
         getCommand("abx").setExecutor(MainCommandExectuer);
         getCommand("abx").setTabCompleter(tabComplete);
+/*
         Bukkit.getPluginManager().registerEvents(onPlayerKick, this);
         Bukkit.getPluginManager().registerEvents(onPlayerBan, this);
         Bukkit.getPluginManager().registerEvents(onDragonDeath, this);
-        Bukkit.getPluginManager().registerEvents(onDragonRespawn, this);
         Bukkit.getPluginManager().registerEvents(onWitherDeath, this);
         Bukkit.getPluginManager().registerEvents(onElderGuardianDeath, this);
         Bukkit.getPluginManager().registerEvents(onWardenDeath, this);
         Bukkit.getPluginManager().registerEvents(onPlayerKilledPlayer, this);
 
-        logging.log(logging.LogLevel.INFO, "[ABX] Events and commands loaded successfully!");
+*/
+
+        logging.log(logging.LogLevel.INFO, "[ABX] Commands loaded successfully!");
 
         this.permActionBar = new PermActionBar(this);
         List<ChatColor> colors = permActionBar.loadColorsFromConfig();
@@ -163,7 +164,7 @@ public class ActionBarXtreme extends JavaPlugin {
             if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
                 logging.log(logging.LogLevel.INFO,"Spigot API says ABX is up to date.");
             } else {
-                logging.log(logging.LogLevel.WARNING, "Spigot API says ABX is outdated! Newest version: " + version + ", Your version: " + getDescription().getVersion() + ", Please Update Here: ");
+                logging.log(logging.LogLevel.WARNING, "Spigot API says ABX is outdated! Newest version: " + version + ", Your version: " + getDescription().getVersion() + ", Please Update Here: https://www.spigotmc.org/resources/111234/");
 
         	}
         });
@@ -210,9 +211,8 @@ public class ActionBarXtreme extends JavaPlugin {
         }
 
         public void stop() {
-            if (task != null) {
+            if(task != null) {
                 task.cancel();
-                task = null;
             }
         }
 
@@ -225,12 +225,11 @@ public class ActionBarXtreme extends JavaPlugin {
             }
         }
 
-        String actionBarMessage = formatActionBarMessage();
 
         public TextComponent getActionBarMessage() {
 
             if (plugin.LegacyColors) {
-                return new TextComponent(ChatColor.translateAlternateColorCodes('&', this.actionBarMessage));
+                return new TextComponent(ChatColor.translateAlternateColorCodes('&', formatActionBarMessage()));
             } else
 
             if(colors.isEmpty()){
@@ -240,9 +239,8 @@ public class ActionBarXtreme extends JavaPlugin {
             ChatColor color = colors.get(tickCounter % colors.size());
 
             tickCounter++;
-
-            this.actionBarMessage = this.actionBarMessage.replaceAll("&", "§");
-            return new TextComponent(TextComponent.fromLegacyText(color + this.actionBarMessage));
+            String actionBarMessage = formatActionBarMessage().replaceAll("&", "§");
+            return new TextComponent(TextComponent.fromLegacyText(color + actionBarMessage));
         }
 
 
@@ -270,7 +268,6 @@ public class ActionBarXtreme extends JavaPlugin {
             return sb.toString();
         }
 
-
         @Override
         public void run () {
 
@@ -292,11 +289,18 @@ public class ActionBarXtreme extends JavaPlugin {
         logging.log(logging.LogLevel.INFO, "[ABX] ActionBarXtreme is disabling...");
 
         logging.log(logging.LogLevel.INFO, "[ABX] Cancelling Permanent ActionBar task...");
-        permActionBar.setEnabled(false);
+        try {
+            permActionBar.setEnabled(false);
+        } catch (Exception ignored) {}
+
         logging.log(logging.LogLevel.INFO, "[ABX] Permanent ActionBar task cancelled!");
 
-        logging.log(logging.LogLevel.INFO, "[ABX] Cancelling any running announce tasks...");
-        permBarOverrideAnnounce.cancelTask();
+        logging.log(logging.LogLevel.INFO, "[ABX] Cancelling all other tasks...");
+        try {
+            permBarOverrideAnnounce.cancelTask();
+        } catch (Exception ignored) {}
+
+        logging.log(logging.LogLevel.INFO, "[ABX] All other tasks cancelled!");
 
         logging.log(logging.LogLevel.SUCCESS ,"ActionBarXtreme has been successfully disabled.");
         logging.log(logging.LogLevel.OUTLINE, "*****************************************************************");

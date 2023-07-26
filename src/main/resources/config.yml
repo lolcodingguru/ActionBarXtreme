@@ -1,12 +1,11 @@
-# ============================================
+# ================================================
 # ||            Configuration File            ||
-# ============================================
+# ================================================
 
 # ============[ Global Settings ]===========
 # -------------------------------------------------------
 # ||  Prefix that will appear before every    ||
-# ||  announcement (event-triggered and       ||
-# ||       using announce commands).          ||
+# ||      announcement (announce command).    ||
 # ||       For no prefix, leave as ""         ||
 # -------------------------------------------------------
 prefix: "&4&l[Broadcast]&c "
@@ -15,7 +14,7 @@ prefix: "&4&l[Broadcast]&c "
 PermanentActionBar:
   # -------------------------------------------------------
   # ||               Enable/Disable                ||
-  # -------------------------------------------------------
+  # ----------------------------------------/---------------
   Enable: false
   
   # -------------------------------------------------------
@@ -23,7 +22,9 @@ PermanentActionBar:
   # ||   Color codes are supported (&4, &c, etc.)  ||
   # ||   Using color codes will override and       ||
   # ||    disable the alternating colors feature.  ||
+  # ||            (and message styles)             ||
   # -------------------------------------------------------
+  # Make sure to put the message in single quotes ('') if it contains color codes!
   actionBarMessage: PLAY.SERVERNAME.NET
   
   # -------------------------------------------------------
@@ -46,13 +47,14 @@ PermanentActionBar:
   
   # -------------------------------------------------------
   # ||               Alternating Colors            ||
-  # ||          Disabled for versions 1.9-1.11     ||
+  # ||          Disabled for versions 1.10-1.11    ||
   # ||      Simply leave WHITE or just one color   ||
   # ||       if you dont want alternating colors.  ||
   # ||       You can add as many as you want       ||
   # -------------------------------------------------------
   # Find the full color list here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
   ChatColor:
+    - GREEN
     - YELLOW
     - AQUA
     - LIGHT_PURPLE
@@ -61,95 +63,15 @@ PermanentActionBar:
     - WHITE
     - MAGIC
 
-# ===================[ Events ]====================
-# Please note that duration here is in seconds, not ticks!
-# As usual, color codes are supported (&4, &c, etc.)
-# -------------------------------------------------------
-Events:
-  # -------------------------------------------------------
-  # ||          On Player Ban Event                 ||
-  # -------------------------------------------------------
-  OnPlayerBan:
-    Enable: false
-    Message: "A player was just banned from the server. Don't Cheat!"
-    Duration: 5
-    allowForceEvent: true
-
-  # -------------------------------------------------------
-  # ||          On Player Kick Event                     ||
-  # -------------------------------------------------------
-  OnPlayerKick:
-    Enable: false
-    Message: "A player has been kicked from the server."
-    Duration: 10
-    allowForceEvent: true
-
-  # -------------------------------------------------------
-  # ||          On Dragon Death Event                ||
-  # -------------------------------------------------------
-  OnDragonDeath:
-    Enable: false
-    Message: "The Ender Dragon has been defeated!"
-    Duration: 10
-    allowForceEvent: true
-
-  # -------------------------------------------------------
-  # ||          On Dragon Respawn Event                  ||
-  # -------------------------------------------------------
-  OnDragonRespawn:
-    Enable: false
-    Message: "The Ender Dragon has respawned!"
-    Duration: 10
-    allowForceEvent: true
-
-  # -------------------------------------------------------
-  # ||          On Elder Guardian Death Event            ||
-  # -------------------------------------------------------
-  OnElderGuardianDeath:
-    Enable: false
-    Message: "An Elder Guardian has been defeated!"
-    Duration: 10
-    allowForceEvent: true
-  # -------------------------------------------------------
-  # ||          On Player Killed Player Event            ||
-  # ||          This is the only event where             ||
-  # ||           placeholders are supported!             ||
-  # ||          %killer% - Player that killed.           ||
-  # ||         %killed% - Player that was killed.        ||
-  # -------------------------------------------------------
-  OnPlayerKilledPlayer:
-    Enable: false
-    Message: "%killed% was killed by %killer%"
-    Duration: 10
-    allowForceEvent: true
-
-  # -------------------------------------------------------
-  # ||          On Warden Death Event                    ||
-  # -------------------------------------------------------
-  OnWardenDeath:
-    Enable: false
-    Message: "A Warden has been defeated!"
-    Duration: 10
-    allowForceEvent: true
-
-  # -------------------------------------------------------
-  # ||          On Wither Death Event                    ||
-  # -------------------------------------------------------
-  OnWitherDeath:
-    Enable: false
-    Message: "The Wither has been defeated!"
-    Duration: 10
-    allowForceEvent: true
-
 # ===============[ Actionbar Announcements (/abx announce) ]=================
 Announcements:
   # -------------------------------------------------------
   # ||               Enable/Disable                ||
   # -------------------------------------------------------
-  EnableAnnouncements: true
+  Enable: true
 
   # -------------------------------------------------------
-  # ||               Default Duration              ||
+  # ||          Default Duration (seconds)         ||
   # ||   The Duration for an announcement can be   ||
   # ||     set in the command, but this is the     ||
   # ||        default duration if the duration     ||
@@ -157,18 +79,18 @@ Announcements:
   # -------------------------------------------------------
   defaultDuration: 5
 
-# =======================================================
+# ===========================================================
 # ||                   Configuration File                ||
-# =======================================================
+# ===========================================================
 #
 #          Thank you for using ActionBarXtreme!
 #         If you like the plugin, please consider
 #            leaving a rating on SpigotMC:
 #       https://www.spigotmc.org/resources/111234/
 #
-# =======================================================
-# If you encounter any bugs or issues, please report them
-# on the plugin's GitHub repository.
+# ===========================================================
+# If you encounter any bugs or issues, please contact
+# me or report them on the plugin's GitHub repository.
 #
 # This is the end of the configuration file.
 # Any changes made beyond this point may cause errors.

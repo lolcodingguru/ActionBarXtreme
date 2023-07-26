@@ -6,26 +6,26 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+// import org.bukkit.entity.Player;
 
 
 public class maincmd implements CommandExecutor {
 
     private final permBarOverrideAnnounce plugin1;
     private final ActionBarXtreme plugin;
-    private final eventForce eventForce;
+//    private final eventForce eventForce;
 
-    public maincmd(ActionBarXtreme plugin, permBarOverrideAnnounce plugin1, eventForce eventForce) {
+    public maincmd(ActionBarXtreme plugin, permBarOverrideAnnounce plugin1/*eventForce eventForce*/) {
         this.plugin = plugin;
         this.plugin1 = plugin1;
-        this.eventForce = eventForce;
+//        this.eventForce = eventForce;
     }
 
     String AvailableCommands =
             ChatColor.AQUA + "Available Commands:\n" +
             ChatColor.RESET + "/abx reload" + ChatColor.GRAY + " - Reloads the plugin.\n" +
-            ChatColor.RESET + "/abx announce " + ChatColor.YELLOW + "[duration] <message>" + ChatColor.GRAY + " - Announces a message to all players through the actionbar.\n" +
-            ChatColor.RESET + "/abx forceeventannounce " + ChatColor.YELLOW + "<event>" + ChatColor.GRAY + " - Forces an event to announce.";
+            ChatColor.RESET + "/abx announce " + ChatColor.YELLOW + "[duration] <message>" + ChatColor.GRAY + " - Announces a message to all players through the actionbar."/* +
+            ChatColor.RESET + "/abx forceeventannounce " + ChatColor.YELLOW + "<event>" + ChatColor.GRAY + " - Forces an event to announce."*/;
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
@@ -36,21 +36,24 @@ public class maincmd implements CommandExecutor {
                     strings[0].equalsIgnoreCase("bc") &&
                             strings[1] != null) {
                 if (commandSender.hasPermission("abx.announce")) {
-                    int duration = 3;
-                    if (strings[1].matches("\\d+s")) {
+                    if(plugin.getConfig().getBoolean("Announcements.Enable")) {
+                        int duration = plugin.getConfig().getInt("Announcements.defaultDuration");
+                        if (strings[1].matches("\\d+s")) {
 
-                        duration = Integer.parseInt(strings[1].substring(0, strings[1].length() - 1));
+                            duration = Integer.parseInt(strings[1].substring(0, strings[1].length() - 1));
 
-                        strings = java.util.Arrays.copyOfRange(strings, 2, strings.length);
+                            strings = java.util.Arrays.copyOfRange(strings, 2, strings.length);
 
+                        } else {
+                            strings = java.util.Arrays.copyOfRange(strings, 1, strings.length);
+                            commandSender.sendMessage(ChatColor.AQUA + "[ABX] " + ChatColor.RESET + ChatColor.RED + "Duration not specified, using default duration of " + plugin.getConfig().getInt("Announcements.defaultDuration") + " seconds.");
+                        }
+
+                        String message = String.join(" ", strings);
+                        plugin1.actionbarAnnounce(duration, message);
                     } else {
-                        strings = java.util.Arrays.copyOfRange(strings, 1, strings.length);
-                        commandSender.sendMessage(ChatColor.AQUA + "[ABX] " + ChatColor.RESET + ChatColor.RED + "Duration not specified, using default duration of 5 seconds.");
+                        commandSender.sendMessage(ChatColor.AQUA + "[ABX] " + ChatColor.RESET + ChatColor.RED + "Announcements are disabled in the configuration file.");
                     }
-
-                    String message = String.join(" ", strings);
-                    plugin1.actionbarAnnounce(duration, message);
-
                 } else {
                     commandSender.sendMessage(ChatColor.RED + "Insufficient Permission.");
                 }
@@ -87,7 +90,7 @@ public class maincmd implements CommandExecutor {
                 }
                 break;
 
-            case 2:
+/*            case 2:
 
                 if(strings[0].equalsIgnoreCase("forceeventannounce") && strings[1].equalsIgnoreCase("onplayerkilledplayer")) {
 
@@ -119,7 +122,7 @@ public class maincmd implements CommandExecutor {
                     commandSender.sendMessage(AvailableCommands);
                 }
                 break;
-
+*/
 
             default:
                 commandSender.sendMessage(AvailableCommands);

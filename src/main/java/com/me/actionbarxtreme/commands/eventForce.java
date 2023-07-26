@@ -1,10 +1,9 @@
-package com.me.actionbarxtreme.commands;
+/*package com.me.actionbarxtreme.commands;
 
 import com.me.actionbarxtreme.ActionBarXtreme;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import com.me.actionbarxtreme.handlers.onPlayerBan;
-import com.me.actionbarxtreme.handlers.onDragonRespawn;
 import com.me.actionbarxtreme.handlers.onDragonDeath;
 import com.me.actionbarxtreme.handlers.onWitherDeath;
 import com.me.actionbarxtreme.handlers.onPlayerKick;
@@ -18,7 +17,6 @@ public class eventForce {
 
     public ActionBarXtreme plugin;
     public onPlayerBan onPlayerBan;
-    public onDragonRespawn onDragonRespawn;
     public onDragonDeath onDragonDeath;
     public onWitherDeath onWitherDeath;
     public onPlayerKick onPlayerKick;
@@ -27,10 +25,9 @@ public class eventForce {
     public onPlayerKilledPlayer onPlayerKilledPlayer;
 
 
-    public eventForce(ActionBarXtreme plugin, onPlayerBan onPlayerBan, onDragonRespawn onDragonRespawn, onDragonDeath onDragonDeath, onWitherDeath onWitherDeath, onPlayerKick onPlayerKick, onElderGuardianDeath onElderGuardianDeath, onWardenDeath onWardenDeath, onPlayerKilledPlayer onPlayerKilledPlayer) {
+    public eventForce(ActionBarXtreme plugin, onPlayerBan onPlayerBan, onDragonDeath onDragonDeath, onWitherDeath onWitherDeath, onPlayerKick onPlayerKick, onElderGuardianDeath onElderGuardianDeath, onWardenDeath onWardenDeath, onPlayerKilledPlayer onPlayerKilledPlayer) {
         this.plugin = plugin;
         this.onPlayerBan = onPlayerBan;
-        this.onDragonRespawn = onDragonRespawn;
         this.onDragonDeath = onDragonDeath;
         this.onWitherDeath = onWitherDeath;
         this.onPlayerKick = onPlayerKick;
@@ -70,20 +67,6 @@ public class eventForce {
                     commandSender.sendMessage("§cYou do not have permission to force this event.");
                 }
                 break;
-
-            case "ONDRAGONRESPAWN":
-                if(commandSender.hasPermission("actionbarxtreme.forceevent.ondragonrespawn") || commandSender.hasPermission("actionbarxtreme.forceevent.*")) {
-                    if(plugin.getConfig().getBoolean("Events.OnDragonRespawn.allowForceEvent")) {
-                        onDragonRespawn.DragonRespawnEvent();
-                        commandSender.sendMessage("§a[ABX] Forced event successfully: §eOnDragonRespawn");
-                    } else {
-                        commandSender.sendMessage("§c[ABX] Forcing this event is disabled in the configuration file!");
-                    }
-                } else {
-                    commandSender.sendMessage("§cYou do not have permission to force this event.");
-                }
-                break;
-
 
             case "ONDRAGONDEATH":
                 if(commandSender.hasPermission("actionbarxtreme.forceevent.ondragondeath") || commandSender.hasPermission("actionbarxtreme.forceevent.*")) {
@@ -164,3 +147,4 @@ public class eventForce {
 
     }
 }
+*/

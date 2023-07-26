@@ -1,4 +1,4 @@
-package com.me.actionbarxtreme.handlers;
+/*package com.me.actionbarxtreme.handlers;
 
 import com.me.actionbarxtreme.ActionBarXtreme;
 import com.me.actionbarxtreme.barMethods.permBarOverrideAnnounce;
@@ -26,10 +26,11 @@ public class onPlayerKick implements Listener {
         if (plugin.getConfig().getBoolean("Events.OnPlayerKick.Enable")) {
             if(!event.getPlayer().isBanned()) {
                 String kickMessage = event.getReason();
-                logging.log(logging.LogLevel.INFO,kickMessage);
                 PlayerKickAnnounceEvent();
             }
         }
     }
 
 }
+
+ */

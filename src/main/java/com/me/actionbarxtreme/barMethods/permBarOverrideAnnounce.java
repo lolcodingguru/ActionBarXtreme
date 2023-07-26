@@ -20,11 +20,8 @@ public class permBarOverrideAnnounce implements Runnable {
     }
 
     public void actionbarAnnounce(int duration, String message) {
-        if (duration == 0) {
-            duration = 5;
-        }
-        this.duration = duration * 20;
 
+        this.duration = duration * 20;
 
         if (message == null || message.isEmpty()) {
             return;
@@ -34,9 +31,9 @@ public class permBarOverrideAnnounce implements Runnable {
 
         plugin.permActionBar.stop();
 
-        if (task != null) {
+        try {
             task.cancel();
-        }
+        } catch (Exception ignored) {}
 
         task = plugin.getServer().getScheduler().runTaskTimer(plugin, this, 0, 1);
 
@@ -54,14 +51,11 @@ public class permBarOverrideAnnounce implements Runnable {
     }
 
     public void cancelTask() {
-        if (task != null) {
             task.cancel();
-            task=null;
-        }
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
 
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
@@ -69,10 +63,11 @@ public class permBarOverrideAnnounce implements Runnable {
 
         duration--;
         if (duration <= 0) {
-            task.cancel();
+            try {
+                task.cancel();
+            } catch (Exception ignored) {}
             plugin.permActionBar.start();
         }
     }
 
 }
-
