@@ -1,13 +1,19 @@
 /*
  * Credits Notice
  *
- * This plugin uses the following third-party library and dependency:
+ * This plugin uses the following third-party libraries and dependencies:
  *
- * ConfigUpdater library, which was developed by tchristofferson. GitHub: https://github.com/tchristofferson/Config-Updater
+ * bStats library, which was developed by Bastion @ GitHub.
+ * https://github.com/Bastian, https://github.com/Bastian/bStats, https://bStats.org.
+ * This plugin and I are not affiliated with or endorsed by bStats.
+ * Similarly, bStats is not affiliated with or endorsed by me or this plugin.
+ *
+ * ConfigUpdater library, which was developed by tchristofferson.
+ * GitHub: https://github.com/tchristofferson/Config-Updater, https://github.com/tchristofferson
  *
  * I would like to express my thanks to tchristofferson for developing this library and for making it easier to work with the mess that is Spigot's configuration system.
  *
- * Please note that this plugin and I are not affiliated with or endorsed by tchristofferson or the ConfigUpdater library.
+ * This plugin and I are not affiliated with or endorsed by tchristofferson or the ConfigUpdater library.
  * Similarly, tchristofferson and the ConfigUpdater library are not affiliated with or endorsed by me or this plugin.
  */
 package com.me.actionbarxtreme;
@@ -26,6 +32,7 @@ import com.me.actionbarxtreme.utils.updateCheck;
 //import com.me.actionbarxtreme.handlers.onPlayerKilledPlayer;
 import com.me.actionbarxtreme.utils.tabComplete;
 import com.tchristofferson.configupdater.ConfigUpdater;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
@@ -63,6 +70,12 @@ public class ActionBarXtreme extends JavaPlugin {
         logging.log(logging.LogLevel.OUTLINE, "*****************************************************************");
         logging.log(logging.LogLevel.INFO, "[ABX] ActionBarXtreme is enabling...");
         logging.log(logging.LogLevel.INFO, "[ABX] Plugin version: " + getDescription().getVersion());
+
+        logging.log(logging.LogLevel.INFO, "[ABX] Loading bStats...");
+        Metrics metrics = new Metrics(this, 19264);
+        logging.log(logging.LogLevel.INFO, "[ABX] bStats loaded successfully!");
+
+
         logging.log(logging.LogLevel.INFO, "[ABX] Loading files...");
 
         File file = new File(getDataFolder(), "config.yml");
