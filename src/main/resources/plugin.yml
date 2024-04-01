@@ -1,0 +1,8 @@
+name: ActionBarXtreme
+version: '${project.version}'
+main: com.me.actionbarxtreme.ActionBarXtreme
+api-version: 1.13
+commands:
+  abx:
+    description: View command list.
+    aliases: []

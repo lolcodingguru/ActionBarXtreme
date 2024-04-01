@@ -1,0 +1,104 @@
+# ================================================
+# ||            Configuration File            ||
+# ================================================
+
+# ============[ Global Settings ]===========
+# -------------------------------------------------------
+# ||  Prefix that will appear before every    ||
+# ||      announcement (announce command).    ||
+# ||       For no prefix, leave as ""         ||
+# -------------------------------------------------------
+prefix: "&4&l[Broadcast]&c "
+
+# ============[ Permanent Action Bar ]===========
+PermanentActionBar:
+  # -------------------------------------------------------
+  # ||               Enable/Disable                ||
+  # ----------------------------------------/---------------
+  Enable: false
+  
+  # -------------------------------------------------------
+  # ||                 Message                     ||
+  # ||   Color codes are supported (&4, &c, etc.)  ||
+  # ||   Using color codes will override and       ||
+  # ||    disable the alternating colors feature.  ||
+  # ||            (and message styles)             ||
+  # -------------------------------------------------------
+  # Make sure to put the message in single quotes ('') if it contains color codes!
+  actionBarMessage: PLAY.SERVERNAME.NET
+  
+  # -------------------------------------------------------
+  # ||    Duration (in ticks) 20 ticks = 1 second  ||
+  # ||       In other words, every how often the   ||
+  # ||     actionbar alternates between colors.    ||
+  # -------------------------------------------------------
+  duration: 6
+  
+  # -------------------------------------------------------
+  # ||             Message Styles                  ||
+  # ||        More than one can be enabled.        ||
+  # -------------------------------------------------------
+  MessageStyles:
+    isBold: true
+    isItalic: false
+    isUnderline: false
+    isStrikethrough: false
+    isMagic: false
+  
+  # -------------------------------------------------------
+  # ||               Alternating Colors            ||
+  # ||          Disabled for versions 1.10-1.11    ||
+  # ||      Simply leave WHITE or just one color   ||
+  # ||       if you dont want alternating colors.  ||
+  # ||       You can add as many as you want       ||
+  # -------------------------------------------------------
+  # Find the full color list here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
+  ChatColor:
+    - GREEN
+    - YELLOW
+    - AQUA
+    - LIGHT_PURPLE
+    - RED
+    - BLUE
+    - WHITE
+    - MAGIC
+
+# ===============[ Actionbar Announcements (/abx announce) ]=================
+Announcements:
+  # -------------------------------------------------------
+  # ||               Enable/Disable                ||
+  # -------------------------------------------------------
+  Enable: true
+
+  # -------------------------------------------------------
+  # ||          Default Duration (seconds)         ||
+  # ||   The Duration for an announcement can be   ||
+  # ||     set in the command, but this is the     ||
+  # ||        default duration if the duration     ||
+  # ||           argument was left blank           ||
+  # -------------------------------------------------------
+  defaultDuration: 5
+
+  # -------------------------------------------------------
+  # ||               Sound Effect                  ||
+  # ||      Should the DING sound effect be        ||
+  # ||       played when an announcement is        ||
+  # ||          made using the command?            ||
+  # -------------------------------------------------------
+  soundEffect: true
+
+# ===========================================================
+# ||                   Configuration File                ||
+# ===========================================================
+#
+#          Thank you for using ActionBarXtreme!
+#         If you like the plugin, please consider
+#            leaving a rating on SpigotMC:
+#       https://www.spigotmc.org/resources/111234/
+#
+# ===========================================================
+# If you encounter any bugs or issues, please contact
+# me or report them on the plugin's GitHub repository.
+#
+# This is the end of the configuration file.
+# Any changes made beyond this point may cause errors.
