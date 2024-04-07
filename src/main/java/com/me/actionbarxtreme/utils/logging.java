@@ -23,8 +23,11 @@ public class logging {
             case OUTLINE:
                 Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&7" + message));
                 break;
+            case DEBUG:
+                Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&b&lDEBUG&r&8] &f" + message));
+                break;
         }
     }
 
-    public enum LogLevel { ERROR, WARNING, INFO, SUCCESS, OUTLINE }
+    public enum LogLevel { ERROR, WARNING, INFO, SUCCESS, OUTLINE, DEBUG }
 }

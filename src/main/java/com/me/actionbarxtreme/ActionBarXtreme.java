@@ -32,22 +32,27 @@ import com.me.actionbarxtreme.utils.updateCheck;
 //import com.me.actionbarxtreme.handlers.onPlayerKilledPlayer;
 import com.me.actionbarxtreme.utils.tabComplete;
 import com.tchristofferson.configupdater.ConfigUpdater;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class ActionBarXtreme extends JavaPlugin {
+public class ActionBarXtreme extends JavaPlugin implements Listener {
+
     public BukkitTask task;
 /*    public onPlayerKick onPlayerKick;
     public onPlayerBan onPlayerBan;
@@ -62,17 +67,22 @@ public class ActionBarXtreme extends JavaPlugin {
     public PermActionBar permActionBar;
     public boolean LegacyColors = false;
     public boolean wardenSupported = false;
-
+    public static boolean isReloading;
+    private Listener listener;
 
     @Override
     public void onEnable() {
+
+        if(isReloading) {
+            logging.log(logging.LogLevel.DEBUG, "[ABX] Reloading ActionBarXtreme...");
+        }
 
         logging.log(logging.LogLevel.OUTLINE, "*****************************************************************");
         logging.log(logging.LogLevel.INFO, "[ABX] ActionBarXtreme is enabling...");
         logging.log(logging.LogLevel.INFO, "[ABX] Plugin version: " + getDescription().getVersion());
 
         logging.log(logging.LogLevel.INFO, "[ABX] Loading bStats...");
-        Metrics metrics = new Metrics(this, 19264);
+        /* Metrics metrics = new Metrics(this, 19264); */
         logging.log(logging.LogLevel.INFO, "[ABX] bStats loaded successfully!");
 
 
@@ -90,14 +100,15 @@ public class ActionBarXtreme extends JavaPlugin {
             } catch (NullPointerException | IOException e) {
                 if(e.getClass().equals(IOException.class)) {
                     e.printStackTrace();
-                } else {
+                } else if (isReloading) {
+                    // Do nothing because Null Pointer Exception is expected when plugin reloading
+                }
+                else {
                     logging.log(logging.LogLevel.OUTLINE , "**************************************************");
                     logging.log(logging.LogLevel.WARNING,"[ABX] Caught NullPointerException while updating config.yml file.");
-                    logging.log(logging.LogLevel.WARNING,"[ABX] If you are reloading the plugin, this is not an issue and you may safely ignore this warning.");
-                    logging.log(logging.LogLevel.WARNING,"[ABX] If you have reloaded the server using /reload, that may be the cause, please restart your server instead.");
-                    logging.log(logging.LogLevel.WARNING,"[ABX] In any other case, this is a bug! Please report it.");
+                    logging.log(logging.LogLevel.WARNING,"[ABX] If you have reloaded the server using /reload, that is likely the cause.");
                     logging.log(logging.LogLevel.WARNING,"[ABX] You should never reload your server using /reload as it can cause issues with plugins.");
-                    logging.log(logging.LogLevel.WARNING,"[ABX] If you continue experiencing issues, please restart your server.");
+                    logging.log(logging.LogLevel.WARNING,"[ABX] If you continue experiencing issues, please restart your server. If issues still persist, report them.");
                     logging.log(logging.LogLevel.OUTLINE , "**************************************************");
                 }
             }
@@ -107,12 +118,21 @@ public class ActionBarXtreme extends JavaPlugin {
             saveDefaultConfig();
             logging.log(logging.LogLevel.INFO, "[ABX] config.yml file generated!");
         }
+        isReloading = false;
 
         reloadConfig();
         logging.log(logging.LogLevel.INFO, "[ABX] Files loaded successfully!");
 
 
         String serverVersion = Bukkit.getVersion();
+
+        // If version is 1.21 or above, show a warning message that this version of the plugin has not yet been tested on this version, proceed with caution
+
+        if (serverVersion.contains("1.21")) {
+            logging.log(logging.LogLevel.WARNING, "[ABX] This version of the plugin has not been tested on " + serverVersion + ". Proceed with caution." +
+                    "\n If you are not on 1.21.x, this is a bug! Please report it");
+        } else
+
 
         if (serverVersion.contains("1.7") || serverVersion.contains("1.8") || serverVersion.contains("1.9")) {
             logging.log(logging.LogLevel.ERROR, "[ABX] Detected unsupported version " + serverVersion + ". Disabling plugin to prevent fatal errors and crashes." +
@@ -149,6 +169,30 @@ public class ActionBarXtreme extends JavaPlugin {
 
         getCommand("abx").setExecutor(MainCommandExectuer);
         getCommand("abx").setTabCompleter(tabComplete);
+
+        listener = new Listener() {
+            @EventHandler
+            public void onPlayerJoin(PlayerJoinEvent event) {
+                permActionBar.stop(event.getPlayer());
+                logging.log(logging.LogLevel.DEBUG, "Player joined: " + event.getPlayer().getName()); // Debug message
+                if (permActionBar.enabled) {
+                    logging.log(logging.LogLevel.DEBUG, "Starting Permanent ActionBar for player: " + event.getPlayer().getName()); // Debug message
+                    permActionBar.start(event.getPlayer());
+                    logging.log(logging.LogLevel.DEBUG, "Permanent ActionBar started for player: " + event.getPlayer().getName()); // Debug message
+                }
+            }
+
+            @EventHandler
+            public void onPlayerQuit(PlayerQuitEvent event) {
+                logging.log(logging.LogLevel.DEBUG, "Player quit: " + event.getPlayer().getName()); // Debug message
+                logging.log(logging.LogLevel.DEBUG, "Stopping Permanent ActionBar for player: " + event.getPlayer().getName());
+                permActionBar.stop(event.getPlayer());
+                logging.log(logging.LogLevel.DEBUG, "Stopped Permanent ActionBar for player: " + event.getPlayer().getName()); // Debug message
+            }
+        };
+
+        getServer().getPluginManager().registerEvents(listener, this);
+
 /*
         Bukkit.getPluginManager().registerEvents(onPlayerKick, this);
         Bukkit.getPluginManager().registerEvents(onPlayerBan, this);
@@ -165,7 +209,7 @@ public class ActionBarXtreme extends JavaPlugin {
         this.permActionBar = new PermActionBar(this);
         List<ChatColor> colors = permActionBar.loadColorsFromConfig();
 
-        permActionBar.start();
+        permActionBar.startAll();
 
         if(serverVersion.contains("1.19") || serverVersion.contains("1.20") || serverVersion.contains("1.21")) {
             wardenSupported = true;
@@ -187,6 +231,8 @@ public class ActionBarXtreme extends JavaPlugin {
     }
 
     public void reload(CommandSender commandSender) {
+         isReloading = true;
+        HandlerList.unregisterAll(listener);
         getPluginLoader().disablePlugin(this);
         getPluginLoader().enablePlugin(this);
         commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + ChatColor.GREEN + "Plugin sucessfully reloaded.");
@@ -198,6 +244,7 @@ public class ActionBarXtreme extends JavaPlugin {
         public boolean enabled = getConfig().getBoolean("PermanentActionBar.Enable");
         private int tickCounter = 0;
         List<ChatColor> colors;
+        Map<Player, BukkitTask> tasks = new HashMap<>();
 
         public List<ChatColor> loadColorsFromConfig() {
             List<ChatColor> colorList = new ArrayList<>();
@@ -218,23 +265,47 @@ public class ActionBarXtreme extends JavaPlugin {
             this.colors = loadColorsFromConfig();
         }
 
-        public void start() {
-            task = getServer().getScheduler().runTaskTimer(plugin, this, 0, getConfig().getInt("PermanentActionBar.duration"));
+        public void start(Player player) {
+            tasks.put(player, getServer().getScheduler().runTaskTimer(plugin, this, 0, getConfig().getInt("PermanentActionBar.duration")));
+            logging.log(logging.LogLevel.DEBUG,"Started task for player: " + player.getName()); // Debug message
 
         }
 
-        public void stop() {
+        public void stop(Player player) {
+            BukkitTask task = tasks.get(player);
             if(task != null) {
                 task.cancel();
+                tasks.remove(player);
+                logging.log(logging.LogLevel.DEBUG,"TStopped task for player: " + player.getName()); // Debug message
+
             }
+            logging.log(logging.LogLevel.DEBUG,"Stopped task for player: " + player.getName()); // Debug message
         }
+
+        public void startAll() {
+            logging.log(logging.LogLevel.DEBUG,"startAll method Called"); // Debug message
+            for (Player player : plugin.getServer().getOnlinePlayers()) {
+                start(player);
+            }
+            logging.log(logging.LogLevel.DEBUG,"Started task for ALL players"); // Debug message
+        }
+
+        public void stopAll() {
+            logging.log(logging.LogLevel.DEBUG,"stopAll method Called"); // Debug message
+
+            for (Player player : plugin.getServer().getOnlinePlayers()) {
+                stop(player);
+            }
+            logging.log(logging.LogLevel.DEBUG,"Stopped task for ALL players"); // Debug message
+        }
+
 
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
             if (enabled) {
-                start();
+                startAll();
             } else {
-                stop();
+                stopAll();
             }
         }
 
@@ -288,7 +359,8 @@ public class ActionBarXtreme extends JavaPlugin {
                 return;
             }
 
-            for (Player player : plugin.getServer().getOnlinePlayers()) {
+            Player player = tasks.keySet().stream().filter(Player::isOnline).findFirst().orElse(null);
+            if (player != null) {
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getActionBarMessage());
 
             }
@@ -311,6 +383,7 @@ public class ActionBarXtreme extends JavaPlugin {
         logging.log(logging.LogLevel.INFO, "[ABX] Cancelling all other tasks...");
         try {
             permBarOverrideAnnounce.cancelTask();
+            HandlerList.unregisterAll(listener);
         } catch (Exception ignored) {}
 
         logging.log(logging.LogLevel.INFO, "[ABX] All other tasks cancelled!");

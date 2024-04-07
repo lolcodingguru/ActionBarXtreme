@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class permBarOverrideAnnounce implements Runnable {
 
+    private Player targetPlayer;
     private final ActionBarXtreme plugin;
     public BukkitTask task;
     private TextComponent component;
@@ -19,8 +20,49 @@ public class permBarOverrideAnnounce implements Runnable {
         this.plugin = plugin;
     }
 
+    public void actionbarAnnounceToPlayer(Player player, int duration, String message) {
+        this.targetPlayer = player;
+        final int finalDuration = duration * 20;
+        this.duration = finalDuration;
+
+        if (message == null || message.isEmpty()) {
+            return;
+        }
+
+        final String finalMessage = plugin.getConfig().getString("prefix") + message;
+
+        plugin.permActionBar.stop(player);
+
+        try {
+            task.cancel();
+        } catch (Exception ignored) {}
+
+        task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            if (plugin.LegacyColors) {
+                component = new TextComponent(ChatColor.translateAlternateColorCodes('&', finalMessage));
+            } else {
+                component = new TextComponent(finalMessage.replaceAll("&", "§"));
+            }
+
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+
+            this.duration--;
+            if (this.duration <= 0) {
+                try {
+                    task.cancel();
+                } catch (Exception ignored) {}
+                plugin.permActionBar.start(player);
+            }
+        }, 0, 1);
+
+        if (plugin.getConfig().getBoolean("Announcements.soundEffect")) {
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+        }
+    }
+
     public void actionbarAnnounce(int duration, String message) {
 
+        this.targetPlayer = null; // Clear the target player
         this.duration = duration * 20;
 
         if (message == null || message.isEmpty()) {
@@ -29,7 +71,7 @@ public class permBarOverrideAnnounce implements Runnable {
 
         message = plugin.getConfig().getString("prefix") + message;
 
-        plugin.permActionBar.stop();
+        plugin.permActionBar.stopAll();
 
         try {
             task.cancel();
@@ -49,7 +91,6 @@ public class permBarOverrideAnnounce implements Runnable {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
         }
         }
-
     }
 
     public void cancelTask() {
@@ -58,9 +99,14 @@ public class permBarOverrideAnnounce implements Runnable {
 
     @Override
     public synchronized void run() {
-
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+        if (targetPlayer != null) {
+            if (targetPlayer.isOnline()) {
+                targetPlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+            }
+        } else {
+            for (Player player : plugin.getServer().getOnlinePlayers()) {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+            }
         }
 
         duration--;
@@ -68,7 +114,11 @@ public class permBarOverrideAnnounce implements Runnable {
             try {
                 task.cancel();
             } catch (Exception ignored) {}
-            plugin.permActionBar.start();
+            if(targetPlayer != null) {
+            plugin.permActionBar.start(targetPlayer);
+            } else {
+                plugin.permActionBar.startAll();
+            }
         }
     }
 

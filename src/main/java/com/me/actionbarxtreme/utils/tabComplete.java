@@ -18,14 +18,23 @@ public class tabComplete implements TabCompleter {
         List<String> tabCompletions = new ArrayList<>();
 
         if (strings.length == 1) {
-            tabCompletions.addAll(Arrays.asList("reload", "announce"/*"forceeventannounce"*/));
+            tabCompletions.addAll(Arrays.asList("reload", "announce", "announceToPlayer"/*"forceeventannounce"*/));
             return tabCompletions;
         } else if (strings[0].equalsIgnoreCase("announce") || strings[0].equalsIgnoreCase("broadcast") || strings[0].equalsIgnoreCase("bc")) {
             if (strings.length == 2) {
                 tabCompletions.addAll(Arrays.asList("3s", "4s", "5s", "6s", "7s", "8s", "9s", "10s"));
                 return tabCompletions;
             }
+        } else if (strings[0].equalsIgnoreCase("announceToPlayer")) {
+            if (strings.length == 2) {
+                // Return list of online player names
+                return null;
+            } else if (strings.length == 3) {
+                tabCompletions.addAll(Arrays.asList("3s", "4s", "5s", "6s", "7s", "8s", "9s", "10s"));
+                return tabCompletions;
+            }
         }
+
         /*else if (strings[0].equalsIgnoreCase("forceeventannounce")) {
             if (strings.length == 2) {
                 return List.of("onplayerban", "ondragondeath", "onwitherdeath", "onplayerkick", "onelderguardiandeath", "onwardendeath", "onplayerkilledplayer");
