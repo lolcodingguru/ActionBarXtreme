@@ -32,6 +32,11 @@ public class maincmd implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
 
+        if(strings.length == 0) {
+            commandSender.sendMessage(AvailableCommands);
+            return true;
+        }
+
         if (strings.length >= 3 && strings[0].equalsIgnoreCase("announceToPlayer")) {
             if (commandSender.hasPermission("abx.announceToPlayer")) {
                 if (plugin.getConfig().getBoolean("Announcements.Enable")) {
@@ -104,29 +109,21 @@ public class maincmd implements CommandExecutor {
             return true;
         }
 
-            switch (strings.length) {
+        if (strings.length == 1) {
+            if (strings[0].equalsIgnoreCase("reload")) {
+                if (commandSender.hasPermission("abx.reload")) {
 
-                case 0:
-                    commandSender.sendMessage(AvailableCommands);
-                    break;
-
-                case 1:
-
-                    if (strings[0].equalsIgnoreCase("reload")) {
-                        if (commandSender.hasPermission("abx.reload")) {
-
-                            if (plugin.task != null) {
-                                plugin.task.cancel();
-                            }
-                            commandSender.sendMessage(ChatColor.AQUA + "[ABX] " + ChatColor.RESET + ChatColor.GREEN + "Reloading...");
-                            plugin.reload(commandSender);
-                        } else {
-                            commandSender.sendMessage(ChatColor.RED + "Insuffiecient Permission.");
-                        }
-                    } else {
-                        commandSender.sendMessage(AvailableCommands);
+                    if (plugin.task != null) {
+                        plugin.task.cancel();
                     }
-                    break;
+                    commandSender.sendMessage(ChatColor.AQUA + "[ABX] " + ChatColor.RESET + ChatColor.GREEN + "Reloading...");
+                    plugin.reload(commandSender);
+                } else {
+                    commandSender.sendMessage(ChatColor.RED + "Insuffiecient Permission.");
+                }
+            } else {
+                commandSender.sendMessage(AvailableCommands);
+            }
 
 /*            case 2:
 
@@ -161,12 +158,9 @@ public class maincmd implements CommandExecutor {
                 }
                 break;
 */
-
-                default:
-                    commandSender.sendMessage(AvailableCommands);
-                    break;
-
-            }
+        } else {
+            commandSender.sendMessage(AvailableCommands);
+        }
 
             return false;
         }
