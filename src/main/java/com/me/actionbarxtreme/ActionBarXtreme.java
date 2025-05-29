@@ -19,23 +19,24 @@
 package com.me.actionbarxtreme;
 
 import com.me.actionbarxtreme.barMethods.permBarOverrideAnnounce;
-//import com.me.actionbarxtreme.commands.eventForce;
+/*import com.me.actionbarxtreme.commands.eventForce;*/
 import com.me.actionbarxtreme.commands.maincmd;
-//import com.me.actionbarxtreme.handlers.onPlayerKick;
-//import com.me.actionbarxtreme.handlers.onDragonDeath;
-//import com.me.actionbarxtreme.handlers.onPlayerBan;
+/*import com.me.actionbarxtreme.handlers.onPlayerKick;
+import com.me.actionbarxtreme.handlers.onDragonDeath;
+import com.me.actionbarxtreme.handlers.onPlayerBan;*/
 import com.me.actionbarxtreme.utils.logging;
 import com.me.actionbarxtreme.utils.updateCheck;
-//import com.me.actionbarxtreme.handlers.onWitherDeath;
-//import com.me.actionbarxtreme.handlers.onElderGuardianDeath;
-//import com.me.actionbarxtreme.handlers.onWardenDeath;
-//import com.me.actionbarxtreme.handlers.onPlayerKilledPlayer;
+/*import com.me.actionbarxtreme.handlers.onWitherDeath;
+import com.me.actionbarxtreme.handlers.onElderGuardianDeath;
+import com.me.actionbarxtreme.handlers.onWardenDeath;
+import com.me.actionbarxtreme.handlers.onPlayerKilledPlayer;*/
 import com.me.actionbarxtreme.utils.tabComplete;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -54,15 +55,15 @@ import java.util.*;
 public class ActionBarXtreme extends JavaPlugin implements Listener {
 
     public BukkitTask task;
-/*    public onPlayerKick onPlayerKick;
+    /*public onPlayerKick onPlayerKick;
     public onPlayerBan onPlayerBan;
     public onDragonDeath onDragonDeath;
     public onWitherDeath onWitherDeath;
     public onElderGuardianDeath onElderGuardianDeath;
     public onWardenDeath onWardenDeath;
-    public onPlayerKilledPlayer onPlayerKilledPlayer;
+    public onPlayerKilledPlayer onPlayerKilledPlayer;*/
 
- */
+
     public permBarOverrideAnnounce permBarOverrideAnnounce;
     public PermActionBar permActionBar;
     public boolean LegacyColors = false;
@@ -97,21 +98,19 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
                 logging.log(logging.LogLevel.INFO, "[ABX] Updating config.yml file...");
                 ConfigUpdater.update(this, "config.yml", file, Collections.emptyList());
                 logging.log(logging.LogLevel.INFO, "[ABX] config.yml file up to date!");
-            } catch (NullPointerException | IOException e) {
-                if(e.getClass().equals(IOException.class)) {
-                    e.printStackTrace();
-                } else if (isReloading) {
-                    // Do nothing because Null Pointer Exception is expected when plugin reloading
+            } catch (NullPointerException ignored) {
+
+            } catch (Exception e) {
+                logging.log(logging.LogLevel.ERROR, "[ABX] Caught ERROR while updating config.yml file.");
+                logging.log(logging.LogLevel.ERROR, "[ABX] This is likely due to wrong format in config.yml file.\n" +
+                        "If you have modified the config.yml file, please make sure it is in the correct format.\n" +
+                        "You can find the correct format in the default config.yml file provided in the plugin page.\n" +
+                        "If issue persists even if config.yml file is in correct format, please report it.\n");
+                logging.log(logging.LogLevel.ERROR, "[ABX] ABX will shut down.\n");
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
                 }
-                else {
-                    logging.log(logging.LogLevel.OUTLINE , "**************************************************");
-                    logging.log(logging.LogLevel.WARNING,"[ABX] Caught NullPointerException while updating config.yml file.");
-                    logging.log(logging.LogLevel.WARNING,"[ABX] If you have reloaded the server using /reload, that is likely the cause.");
-                    logging.log(logging.LogLevel.WARNING,"[ABX] You should never reload your server using /reload as it can cause issues with plugins.");
-                    logging.log(logging.LogLevel.WARNING,"[ABX] If you continue experiencing issues, please restart your server. If issues still persist, report them.");
-                    logging.log(logging.LogLevel.OUTLINE , "**************************************************");
-                }
-            }
+
         } else {
             logging.log(logging.LogLevel.INFO, "[ABX] Did not detect config.yml file. Generating...");
             getConfig().options().copyDefaults();
@@ -120,7 +119,19 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
         }
         isReloading = false;
 
-        reloadConfig();
+        try {
+            reloadConfig();
+        } catch (Exception e) {
+            logging.log(logging.LogLevel.ERROR, "[ABX] Caught ERROR while reloading config.yml file.");
+            logging.log(logging.LogLevel.ERROR, "[ABX] This may be due to wrong format in config.yml file.\n" +
+                    "If you have modified the config.yml file, please make sure it is in the correct format.\n" +
+                    "You can find the correct format in the default config.yml file provided in the plugin page.\n" +
+                    "If issue persists even if config.yml file is in correct format, please report it.\n");
+            logging.log(logging.LogLevel.ERROR, "[ABX] ABX will shut down.\n");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
         logging.log(logging.LogLevel.INFO, "[ABX] Files loaded successfully!");
 
 
@@ -148,19 +159,19 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
 
         permBarOverrideAnnounce permBarOverrideAnnounce = new permBarOverrideAnnounce(ActionBarXtreme.this);
 
-/*        onPlayerBan = new onPlayerBan(this, permBarOverrideAnnounce);
+        /*onPlayerBan = new onPlayerBan(this, permBarOverrideAnnounce);
         onDragonDeath = new onDragonDeath(this, permBarOverrideAnnounce);
         onWitherDeath = new onWitherDeath(this, permBarOverrideAnnounce);
         onPlayerKick = new onPlayerKick(this, permBarOverrideAnnounce);
         onElderGuardianDeath = new onElderGuardianDeath(this, permBarOverrideAnnounce);
         onWardenDeath = new onWardenDeath(this, permBarOverrideAnnounce);
-        onPlayerKilledPlayer = new onPlayerKilledPlayer(this, permBarOverrideAnnounce);
+        onPlayerKilledPlayer = new onPlayerKilledPlayer(this, permBarOverrideAnnounce);*/
 
- */
+
         tabComplete tabComplete = new tabComplete();
 
 
-        logging.log(logging.LogLevel.INFO, "[ABX] Loading"/* + "events and" */+ " commands...");
+        logging.log(logging.LogLevel.INFO, "[ABX] Loading" + /*"events and" +*/ " commands...");
 
         CommandExecutor MainCommandExectuer = new maincmd(this, new permBarOverrideAnnounce
                 (ActionBarXtreme.this)/*, new eventForce(this,
@@ -170,7 +181,7 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
         getCommand("abx").setExecutor(MainCommandExectuer);
         getCommand("abx").setTabCompleter(tabComplete);
 
-        listener = new Listener() {
+       /* listener = new Listener() {
             @EventHandler
             public void onPlayerJoin(PlayerJoinEvent event) {
                 permActionBar.stop(event.getPlayer());
@@ -189,20 +200,20 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
                 permActionBar.stop(event.getPlayer());
                 logging.log(logging.LogLevel.DEBUG, "Stopped Permanent ActionBar for player: " + event.getPlayer().getName()); // Debug message
             }
-        };
+        };*/
 
         getServer().getPluginManager().registerEvents(listener, this);
 
-/*
-        Bukkit.getPluginManager().registerEvents(onPlayerKick, this);
+
+        /*Bukkit.getPluginManager().registerEvents(onPlayerKick, this);
         Bukkit.getPluginManager().registerEvents(onPlayerBan, this);
         Bukkit.getPluginManager().registerEvents(onDragonDeath, this);
         Bukkit.getPluginManager().registerEvents(onWitherDeath, this);
         Bukkit.getPluginManager().registerEvents(onElderGuardianDeath, this);
         Bukkit.getPluginManager().registerEvents(onWardenDeath, this);
-        Bukkit.getPluginManager().registerEvents(onPlayerKilledPlayer, this);
+        Bukkit.getPluginManager().registerEvents(onPlayerKilledPlayer, this);*/
 
-*/
+
 
         logging.log(logging.LogLevel.INFO, "[ABX] Commands loaded successfully!");
 
