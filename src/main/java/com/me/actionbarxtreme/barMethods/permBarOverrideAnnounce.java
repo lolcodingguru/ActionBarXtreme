@@ -29,7 +29,12 @@ public class permBarOverrideAnnounce {
      * Announce to a specific player via action bar
      */
     public void actionbarAnnounceToPlayer(Player player, int duration, String message) {
-        if (player == null || !player.isOnline() || message == null || message.isEmpty()) {
+        if (player == null || message == null || message.isEmpty()) {
+            return;
+        }
+
+        // Double-check player is online on the same thread
+        if (!player.isOnline()) {
             return;
         }
 
@@ -200,16 +205,26 @@ public class permBarOverrideAnnounce {
 
         public SinglePlayerAnnounceTask(Player player, int durationSeconds, String message) {
             super(durationSeconds, message);
+            // Null check for player as safety
+            if (player == null) {
+                throw new IllegalArgumentException("Player cannot be null");
+            }
             this.player = player;
             this.playerId = player.getUniqueId();
         }
 
         @Override
         protected void sendMessage() {
-            if (player.isOnline()) {
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
-            } else {
-                // Player went offline, cancel the task
+            try {
+                if (player != null && player.isOnline()) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+                } else {
+                    // Player went offline, cancel the task
+                    cancel();
+                }
+            } catch (Exception e) {
+                // Log the error and cancel the task
+                logging.log(logging.LogLevel.ERROR, "Error sending action bar message to player: " + e.getMessage());
                 cancel();
             }
         }
@@ -282,8 +297,14 @@ public class permBarOverrideAnnounce {
                     logging.log(logging.LogLevel.DEBUG, "Added player " + player.getName() + " to global announcement");
                 }
 
-                // Send the message
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+                // Send the message with error handling
+                try {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+                } catch (Exception e) {
+                    logging.log(logging.LogLevel.ERROR, "Error in global action bar for player " + player.getName() + ": " + e.getMessage());
+                    // Remove problematic player from active set
+                    activePlayerIds.remove(playerId);
+                }
             }
 
             // Remove players who are no longer online

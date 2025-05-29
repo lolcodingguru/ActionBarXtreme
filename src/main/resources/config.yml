@@ -14,7 +14,7 @@ prefix: "&4&l[Broadcast]&c "
 PermanentActionBar:
   # -------------------------------------------------------
   # ||               Enable/Disable                ||
-  # ----------------------------------------/---------------
+  # -------------------------------------------------------
   Enable: false
   
   # -------------------------------------------------------
@@ -63,10 +63,12 @@ PermanentActionBar:
     - WHITE
     - MAGIC
 
-# ===============[ Actionbar Announcements (/abx announce) ]=================
+# ===============[ Actionbar Announcements (/abx announce and /abx announcetoplayer ]=================
 Announcements:
   # -------------------------------------------------------
   # ||               Enable/Disable                ||
+  # ||                                             ||
+  # ||   This also affects /abx announcetoplayer   ||
   # -------------------------------------------------------
   Enable: true
 
@@ -76,6 +78,8 @@ Announcements:
   # ||     set in the command, but this is the     ||
   # ||        default duration if the duration     ||
   # ||           argument was left blank           ||
+  # ||                                             ||
+  # || This also applies to /abx announcetoplayer  ||
   # -------------------------------------------------------
   defaultDuration: 5
 
@@ -84,6 +88,8 @@ Announcements:
   # ||      Should the DING sound effect be        ||
   # ||       played when an announcement is        ||
   # ||          made using the command?            ||
+  # ||                                             ||
+  # || This also applies to /abx announcetoplayer  ||
   # -------------------------------------------------------
   soundEffect: true
 

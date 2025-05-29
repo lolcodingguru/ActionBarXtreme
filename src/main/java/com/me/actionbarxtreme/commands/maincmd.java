@@ -89,8 +89,14 @@ public class maincmd implements CommandExecutor {
             commandSender.sendMessage(ChatColor.AQUA + "[ABX] " + ChatColor.RESET + ChatColor.RED + "Duration not specified, using default duration of " + duration + " seconds.");
         }
 
+        // Pre-build message before class loading issues might occur
         String message = String.join(" ", strings);
-        plugin1.actionbarAnnounceToPlayer(player, duration, message);
+
+        // Execute announcement on the next tick to avoid classloading issues
+        int finalDuration = duration;
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            plugin1.actionbarAnnounceToPlayer(player, finalDuration, message);
+        });
     }
 
     private void handleAnnounce(CommandSender commandSender, String[] strings) {
@@ -119,7 +125,11 @@ public class maincmd implements CommandExecutor {
         }
 
         String message = String.join(" ", strings);
-        plugin1.actionbarAnnounce(duration, message);
+        // Execute announcement on the next tick to avoid classloading issues
+        int finalDuration = duration;
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            plugin1.actionbarAnnounce(finalDuration, message);
+        });
     }
 
     private void handleReload(CommandSender commandSender) {

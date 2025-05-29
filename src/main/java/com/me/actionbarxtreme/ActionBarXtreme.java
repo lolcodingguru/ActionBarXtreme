@@ -39,6 +39,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -80,6 +81,7 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
         logging.log(logging.LogLevel.OUTLINE, "*****************************************************************");
         logging.log(logging.LogLevel.INFO, "[ABX] ActionBarXtreme is enabling...");
         logging.log(logging.LogLevel.INFO, "[ABX] Plugin version: " + getDescription().getVersion());
+        logging.log(logging.LogLevel.DEBUG, "[ABX] Server version: " + Bukkit.getVersion());
 
         logging.log(logging.LogLevel.INFO, "[ABX] Loading bStats...");
         /* Metrics metrics = new Metrics(this, 19264); */
@@ -136,11 +138,11 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
 
         String serverVersion = Bukkit.getVersion();
 
-        // If version is 1.21 or above, show a warning message that this version of the plugin has not yet been tested on this version, proceed with caution
+        // If version is 1.22, show a warning message that this version of the plugin has not yet been tested on this version, proceed with caution
 
-        if (serverVersion.contains("1.21")) {
+        if (serverVersion.contains("1.22")) {
             logging.log(logging.LogLevel.WARNING, "[ABX] This version of the plugin has not been tested on " + serverVersion + ". Proceed with caution." +
-                    "\n If you are not on 1.21.x, this is a bug! Please report it");
+                    "\n If you are not on 1.22.x, this is a bug! Please report it");
         } else
 
 
@@ -241,12 +243,45 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
     }
 
     public void reload(CommandSender commandSender) {
-         isReloading = true;
-        HandlerList.unregisterAll(listener);
-        getPluginLoader().disablePlugin(this);
-        getPluginLoader().enablePlugin(this);
-        commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + ChatColor.GREEN + "Plugin sucessfully reloaded.");
-        logging.log(logging.LogLevel.INFO,"[ABX] Plugin was reloaded");
+        try {
+            // Set reloading flag
+            isReloading = true;
+
+            // Cancel all tasks
+            if (task != null) {
+                task.cancel();
+                task = null;
+            }
+
+            // Cancel any active announcements
+            if (permBarOverrideAnnounce != null) {
+                permBarOverrideAnnounce.cancelTask();
+            }
+
+            // Unregister all listeners
+            HandlerList.unregisterAll((Plugin) this);
+            if (listener != null) {
+                HandlerList.unregisterAll(listener);
+            }
+
+            // Reload the configuration
+            reloadConfig();
+
+            // Re-enable the plugin
+            getPluginLoader().disablePlugin(this);
+            getPluginLoader().enablePlugin(this);
+
+            // Notify success
+            commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + ChatColor.GREEN + "Plugin successfully reloaded.");
+            logging.log(logging.LogLevel.INFO, "[ABX] Plugin was reloaded successfully");
+        } catch (Exception e) {
+            // Log any errors that occur during reload
+            logging.log(logging.LogLevel.ERROR, "Error during plugin reload: " + e.getMessage());
+            commandSender.sendMessage(ChatColor.LIGHT_PURPLE + "[ABX] " + ChatColor.RESET + ChatColor.RED + "Error reloading plugin. Check console for details.");
+        } finally {
+            // Always reset the reloading flag
+            isReloading = false;
+        }
     }
 
     public class PermActionBar implements Runnable {
