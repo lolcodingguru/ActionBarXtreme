@@ -77,7 +77,6 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
         if(isReloading) {
             logging.log(logging.LogLevel.DEBUG, "[ABX] Reloading ActionBarXtreme...");
         }
-
         logging.log(logging.LogLevel.OUTLINE, "*****************************************************************");
         logging.log(logging.LogLevel.INFO, "[ABX] ActionBarXtreme is enabling...");
         logging.log(logging.LogLevel.INFO, "[ABX] Plugin version: " + getDescription().getVersion());
@@ -181,7 +180,7 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
         getCommand("abx").setExecutor(MainCommandExectuer);
         getCommand("abx").setTabCompleter(tabComplete);
 
-       /* listener = new Listener() {
+        listener = new Listener() {
             @EventHandler
             public void onPlayerJoin(PlayerJoinEvent event) {
                 permActionBar.stop(event.getPlayer());
@@ -200,7 +199,7 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
                 permActionBar.stop(event.getPlayer());
                 logging.log(logging.LogLevel.DEBUG, "Stopped Permanent ActionBar for player: " + event.getPlayer().getName()); // Debug message
             }
-        };*/
+        };
 
         getServer().getPluginManager().registerEvents(listener, this);
 
@@ -253,64 +252,163 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
     public class PermActionBar implements Runnable {
         private final ActionBarXtreme plugin;
         public boolean enabled = getConfig().getBoolean("PermanentActionBar.Enable");
-        private int tickCounter = 0;
-        List<ChatColor> colors;
-        Map<Player, BukkitTask> tasks = new HashMap<>();
+        private List<ChatColor> colors;
+
+        // Track color counters PER PLAYER
+        private final Map<UUID, Integer> playerColorCounters = new HashMap<>();
+        private final Map<Player, BukkitTask> playerTasks = new HashMap<>();
+
+        // Store the message format once to avoid repeated config lookups
+        private final String baseMessage;
+        private final boolean useBold;
+        private final boolean useItalic;
+        private final boolean useUnderline;
+        private final boolean useStrikethrough; 
+        private final boolean useMagic;
+        private final int duration;
 
         public List<ChatColor> loadColorsFromConfig() {
             List<ChatColor> colorList = new ArrayList<>();
             List<String> colorStrings = plugin.getConfig().getStringList("PermanentActionBar.ChatColor");
+
             for (String colorString : colorStrings) {
                 try {
                     ChatColor color = ChatColor.valueOf(colorString.toUpperCase().replace(" ", "_"));
                     colorList.add(color);
                 } catch (IllegalArgumentException ignored) {
-
+                    // Invalid color, ignore
                 }
             }
+
+            // Ensure we have at least one color
+            if (colorList.isEmpty()) {
+                colorList.add(ChatColor.WHITE);
+            }
+
             return colorList;
         }
 
         public PermActionBar(ActionBarXtreme plugin) {
             this.plugin = plugin;
             this.colors = loadColorsFromConfig();
+
+            // Cache message elements from config to avoid repeated lookups
+            this.baseMessage = getConfig().getString("PermanentActionBar.actionBarMessage");
+            this.useBold = getConfig().getBoolean("PermanentActionBar.MessageStyles.isBold");
+            this.useItalic = getConfig().getBoolean("PermanentActionBar.MessageStyles.isItalic");
+            this.useUnderline = getConfig().getBoolean("PermanentActionBar.MessageStyles.isUnderline");
+            this.useStrikethrough = getConfig().getBoolean("PermanentActionBar.MessageStyles.isStrikethrough");
+            this.useMagic = getConfig().getBoolean("PermanentActionBar.MessageStyles.isMagic");
+            this.duration = getConfig().getInt("PermanentActionBar.duration");
         }
 
+        /**
+         * Start sending permanent action bar to a player with a dedicated task
+         */
         public void start(Player player) {
-            tasks.put(player, getServer().getScheduler().runTaskTimer(plugin, this, 0, getConfig().getInt("PermanentActionBar.duration")));
-            logging.log(logging.LogLevel.DEBUG,"Started task for player: " + player.getName()); // Debug message
+            if (player == null || !player.isOnline()) return;
 
+            // Stop any existing task first
+            stop(player);
+
+            // Reset this player's color counter
+            playerColorCounters.put(player.getUniqueId(), 0);
+
+            // Create an isolated Runnable just for this player to avoid shared state issues
+            BukkitTask task = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    if (!player.isOnline()) {
+                        // Player went offline, cancel task
+                        stop(player);
+                        return;
+                    }
+
+                    // Send message with this player's current color
+                    sendActionBarToPlayer(player);
+                }
+            }, 0, duration);
+
+            // Store the task for later management
+            playerTasks.put(player, task);
+            logging.log(logging.LogLevel.DEBUG, "Started dedicated action bar task for: " + player.getName());
         }
 
-        public void stop(Player player) {
-            BukkitTask task = tasks.get(player);
-            if(task != null) {
-                task.cancel();
-                tasks.remove(player);
-                logging.log(logging.LogLevel.DEBUG,"TStopped task for player: " + player.getName()); // Debug message
+        /**
+         * Send the action bar to a specific player with their tracked color
+         */
+        private void sendActionBarToPlayer(Player player) {
+            if (!enabled || !player.isOnline()) return;
 
+            // Get this player's color counter
+            UUID playerId = player.getUniqueId();
+            int colorIndex = playerColorCounters.getOrDefault(playerId, 0);
+
+            // Get the next color for this player
+            ChatColor color = colors.get(colorIndex % colors.size());
+
+            // Increment the player's color counter
+            playerColorCounters.put(playerId, colorIndex + 1);
+
+            // Format message with this player's current color
+            TextComponent message;
+            if (plugin.LegacyColors) {
+                message = new TextComponent(ChatColor.translateAlternateColorCodes('&', formatActionBarMessage()));
+            } else {
+                String formattedMsg = formatActionBarMessage().replaceAll("&", "§");
+                message = new TextComponent(TextComponent.fromLegacyText(color + formattedMsg));
             }
-            logging.log(logging.LogLevel.DEBUG,"Stopped task for player: " + player.getName()); // Debug message
+
+            // Send directly to this player
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, message);
         }
 
+        /**
+         * Stop sending permanent action bar to a player
+         */
+        public void stop(Player player) {
+            if (player == null) return;
+
+            BukkitTask task = playerTasks.remove(player);
+            if (task != null) {
+                task.cancel();
+                logging.log(logging.LogLevel.DEBUG, "Stopped action bar task for player: " + player.getName());
+            }
+
+            // Clean up player's color counter
+            playerColorCounters.remove(player.getUniqueId());
+        }
+
+        /**
+         * Start for all online players
+         */
         public void startAll() {
-            logging.log(logging.LogLevel.DEBUG,"startAll method Called"); // Debug message
+            logging.log(logging.LogLevel.DEBUG, "Starting action bar for all players");
             for (Player player : plugin.getServer().getOnlinePlayers()) {
                 start(player);
             }
-            logging.log(logging.LogLevel.DEBUG,"Started task for ALL players"); // Debug message
         }
 
+        /**
+         * Stop for all players
+         */
         public void stopAll() {
-            logging.log(logging.LogLevel.DEBUG,"stopAll method Called"); // Debug message
+            logging.log(logging.LogLevel.DEBUG, "Stopping action bar for all players");
 
-            for (Player player : plugin.getServer().getOnlinePlayers()) {
+            // Copy to avoid concurrent modification
+            List<Player> players = new ArrayList<>(playerTasks.keySet());
+            for (Player player : players) {
                 stop(player);
             }
-            logging.log(logging.LogLevel.DEBUG,"Stopped task for ALL players"); // Debug message
+
+            // Clear all data structures
+            playerTasks.clear();
+            playerColorCounters.clear();
         }
 
-
+        /**
+         * Enable or disable the action bar system
+         */
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
             if (enabled) {
@@ -320,60 +418,54 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
             }
         }
 
-
-        public TextComponent getActionBarMessage() {
-
-            if (plugin.LegacyColors) {
-                return new TextComponent(ChatColor.translateAlternateColorCodes('&', formatActionBarMessage()));
-            } else
-
-            if(colors.isEmpty()){
-                colors.add(ChatColor.WHITE);
+        /**
+         * Resets the tick counter for a specific player
+         */
+        public void resetTickCounter(Player player) {
+            if (player != null) {
+                playerColorCounters.put(player.getUniqueId(), 0);
+                logging.log(logging.LogLevel.DEBUG, "Reset tick counter for player: " + player.getName());
             }
-
-            ChatColor color = colors.get(tickCounter % colors.size());
-
-            tickCounter++;
-            String actionBarMessage = formatActionBarMessage().replaceAll("&", "§");
-            return new TextComponent(TextComponent.fromLegacyText(color + actionBarMessage));
         }
 
+        /**
+         * Resets all tick counters
+         */
+        public void resetTickCounter() {
+            playerColorCounters.clear();
+            logging.log(logging.LogLevel.DEBUG, "Reset all tick counters");
+        }
 
-
+        /**
+         * Format the action bar message with styles from config
+         */
         private String formatActionBarMessage() {
             StringBuilder sb = new StringBuilder();
-            sb.append(getConfig().getString("PermanentActionBar.actionBarMessage"));
+            sb.append(baseMessage);
 
-            if (getConfig().getBoolean("PermanentActionBar.MessageStyles.isBold")) {
-                sb.insert(0, ChatColor.BOLD);
-            }
-            if (getConfig().getBoolean("PermanentActionBar.MessageStyles.isItalic")) {
-                sb.insert(0, ChatColor.ITALIC);
-            }
-            if (getConfig().getBoolean("PermanentActionBar.MessageStyles.isUnderline")) {
-                sb.insert(0, ChatColor.UNDERLINE);
-            }
-            if (getConfig().getBoolean("PermanentActionBar.MessageStyles.isStrikethrough")) {
-                sb.insert(0, ChatColor.STRIKETHROUGH);
-            }
-            if (getConfig().getBoolean("PermanentActionBar.MessageStyles.isMagic")) {
-                sb.insert(0, ChatColor.MAGIC);
-            }
+            if (useBold) sb.insert(0, ChatColor.BOLD);
+            if (useItalic) sb.insert(0, ChatColor.ITALIC);
+            if (useUnderline) sb.insert(0, ChatColor.UNDERLINE);
+            if (useStrikethrough) sb.insert(0, ChatColor.STRIKETHROUGH);
+            if (useMagic) sb.insert(0, ChatColor.MAGIC);
 
             return sb.toString();
         }
 
+        /**
+         * This run method is only used as a fallback and should rarely be called
+         * since we now use dedicated tasks per player
+         */
         @Override
-        public void run () {
+        public void run() {
+            // This is now just a fallback - each player has their own dedicated task
+            if (!enabled) return;
 
-            if (!enabled) {
-                return;
-            }
-
-            Player player = tasks.keySet().stream().filter(Player::isOnline).findFirst().orElse(null);
-            if (player != null) {
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, getActionBarMessage());
-
+            for (Player player : plugin.getServer().getOnlinePlayers()) {
+                if (player.isOnline() && !playerTasks.containsKey(player)) {
+                    // If a player somehow doesn't have a task, create one
+                    start(player);
+                }
             }
         }
     }
@@ -386,16 +478,26 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
 
         logging.log(logging.LogLevel.INFO, "[ABX] Cancelling Permanent ActionBar task...");
         try {
-            permActionBar.setEnabled(false);
-        } catch (Exception ignored) {}
+            if (permActionBar != null) {
+                permActionBar.setEnabled(false);
+            }
+        } catch (Exception e) {
+            logging.log(logging.LogLevel.ERROR, "[ABX] Error cancelling permanent action bar: " + e.getMessage());
+        }
 
         logging.log(logging.LogLevel.INFO, "[ABX] Permanent ActionBar task cancelled!");
 
         logging.log(logging.LogLevel.INFO, "[ABX] Cancelling all other tasks...");
         try {
-            permBarOverrideAnnounce.cancelTask();
-            HandlerList.unregisterAll(listener);
-        } catch (Exception ignored) {}
+            if (permBarOverrideAnnounce != null) {
+                permBarOverrideAnnounce.cancelTask();
+            }
+            if (listener != null) {
+                HandlerList.unregisterAll(listener);
+            }
+        } catch (Exception e) {
+            logging.log(logging.LogLevel.ERROR, "[ABX] Error cancelling other tasks: " + e.getMessage());
+        }
 
         logging.log(logging.LogLevel.INFO, "[ABX] All other tasks cancelled!");
 
