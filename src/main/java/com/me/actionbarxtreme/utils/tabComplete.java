@@ -1,12 +1,11 @@
 package com.me.actionbarxtreme.utils;
 
-// import org.bukkit.Bukkit;
-//import org.bukkit.Bukkit;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-//import org.bukkit.entity.Player;
-// import org.bukkit.entity.Player;
+import org.bukkit.entity.Player;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +36,7 @@ public class tabComplete implements TabCompleter {
             }
         }
 
-        /*else if (strings[0].equalsIgnoreCase("forceeventannounce")) {
+        else if (strings[0].equalsIgnoreCase("forceeventannounce")) {
             if (strings.length == 2) {
                 return List.of("onplayerban", "ondragondeath", "onwitherdeath", "onplayerkick", "onelderguardiandeath", "onwardendeath", "onplayerkilledplayer");
             }
@@ -48,10 +47,10 @@ public class tabComplete implements TabCompleter {
                 return getOnlinePlayerNames();
             }
         }
-        */
+
         return null;
     }
-/*
+
     private List<String> getOnlinePlayerNames() {
         List<String> playerNames = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -59,5 +58,5 @@ public class tabComplete implements TabCompleter {
         }
         return playerNames;
     }
-    */
+
 }

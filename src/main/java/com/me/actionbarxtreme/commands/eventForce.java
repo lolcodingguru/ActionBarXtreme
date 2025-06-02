@@ -1,4 +1,4 @@
-/*package com.me.actionbarxtreme.commands;
+package com.me.actionbarxtreme.commands;
 
 import com.me.actionbarxtreme.ActionBarXtreme;
 import org.bukkit.command.CommandSender;
@@ -147,4 +147,3 @@ public class eventForce {
 
     }
 }
-*/

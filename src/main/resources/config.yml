@@ -92,6 +92,52 @@ Announcements:
   # || This also applies to /abx announcetoplayer  ||
   # -------------------------------------------------------
   soundEffect: true
+  
+#===============[ Event-Triggered Announcements ]=================
+Events:
+
+  OnDragonDeath:
+    Enable: true
+    Message: 'The Ender Dragon has been killed!'
+    Duration: 5
+    allowForceEvent: true
+
+  OnElderGuardianDeath:
+    Enable: true
+    Message: 'An Elder Guardian has been killed!'
+    Duration: 5
+    allowForceEvent: true
+
+  OnWitherDeath:
+    Enable: true
+    Message: 'The Wither has been killed!'
+    Duration: 5
+    allowForceEvent: true
+
+  OnWardenDeath:
+    Enable: true
+    Message: 'A Warden has been killed!'
+    Duration: 5
+    allowForceEvent: true
+
+  OnPlayerBan:
+    Enable: true
+    Message: "A Player was just banned! Don't cheat!"
+    Duration: 5
+    allowForceEvent: true
+
+  OnPlayerKick:
+    Enable: true
+    Message: "A Player was kicked."
+    Duration: 5
+    allowForceEvent: true
+
+  OnPlayerKilledPlayer:
+    Enable: true
+    Message: "%killer% just killed %killed%!"
+    Duration: 5
+    allowForceEvent: true
+
 
 # ===========================================================
 # ||                   Configuration File                ||

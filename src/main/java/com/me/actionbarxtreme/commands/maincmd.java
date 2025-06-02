@@ -14,12 +14,12 @@ public class maincmd implements CommandExecutor {
 
     private final permBarOverrideAnnounce plugin1;
     private final ActionBarXtreme plugin;
-    /*private final eventForce eventForce;*/
+    private final eventForce eventForce;
 
-    public maincmd(ActionBarXtreme plugin, permBarOverrideAnnounce plugin1/*, eventForce eventForce*/) {
+    public maincmd(ActionBarXtreme plugin, permBarOverrideAnnounce plugin1, eventForce eventForce) {
         this.plugin = plugin;
         this.plugin1 = plugin1;
-        /*this.eventForce = eventForce;*/
+        this.eventForce = eventForce;
     }
 
     String AvailableCommands =
@@ -27,7 +27,7 @@ public class maincmd implements CommandExecutor {
                     ChatColor.RESET + "/abx reload" + ChatColor.GRAY + " - Reloads the plugin.\n" +
                     ChatColor.RESET + "/abx announce " + ChatColor.YELLOW + "[duration] <message>" + ChatColor.GRAY + " - Announces a message to ALL players through the actionbar.\n" +
                     ChatColor.RESET + "/abx announceToPlayer " + ChatColor.YELLOW + "<player> [duration] <message>" + ChatColor.GRAY + " - Announces a message to a specific player through the actionbar.\n"
-                    /*+ ChatColor.RESET + "/abx forceeventannounce " + ChatColor.YELLOW + "<event>" + ChatColor.GRAY + " - Forces an event to announce."*/;
+                    + ChatColor.RESET + "/abx forceeventannounce " + ChatColor.YELLOW + "<event>" + ChatColor.GRAY + " - Forces an event to announce.";
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if (strings.length == 0) {
@@ -47,9 +47,9 @@ public class maincmd implements CommandExecutor {
             case "reload":
                 handleReload(commandSender);
                 break;
-            /*tcase "forceeventannounce":
+            case "forceeventannounce":
                 handleForceEventAnnounce(commandSender, strings);
-                break;*/
+                break;
             default:
                 commandSender.sendMessage(AvailableCommands);
                 break;
@@ -145,7 +145,7 @@ public class maincmd implements CommandExecutor {
         plugin.reload(commandSender);
     }
 
-    /*private void handleForceEventAnnounce(CommandSender commandSender, String[] strings) {
+    private void handleForceEventAnnounce(CommandSender commandSender, String[] strings) {
         if (strings.length < 2) {
             commandSender.sendMessage(AvailableCommands);
             return;
@@ -169,7 +169,7 @@ public class maincmd implements CommandExecutor {
         } else {
             eventForce.forceEventAll(commandSender, strings[1]);
         }
-    }*/
+    }
 
     // Old method of handling commands below, keeping it just in case. But it was removed because more commands will probably be needed in the future so switch case is more efficient.:
     // Probably will remove it permanently in the future.

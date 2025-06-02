@@ -19,17 +19,17 @@
 package com.me.actionbarxtreme;
 
 import com.me.actionbarxtreme.barMethods.permBarOverrideAnnounce;
-/*import com.me.actionbarxtreme.commands.eventForce;*/
+import com.me.actionbarxtreme.commands.eventForce;
 import com.me.actionbarxtreme.commands.maincmd;
-/*import com.me.actionbarxtreme.handlers.onPlayerKick;
+import com.me.actionbarxtreme.handlers.onPlayerKick;
 import com.me.actionbarxtreme.handlers.onDragonDeath;
-import com.me.actionbarxtreme.handlers.onPlayerBan;*/
+import com.me.actionbarxtreme.handlers.onPlayerBan;
 import com.me.actionbarxtreme.utils.logging;
 import com.me.actionbarxtreme.utils.updateCheck;
-/*import com.me.actionbarxtreme.handlers.onWitherDeath;
+import com.me.actionbarxtreme.handlers.onWitherDeath;
 import com.me.actionbarxtreme.handlers.onElderGuardianDeath;
 import com.me.actionbarxtreme.handlers.onWardenDeath;
-import com.me.actionbarxtreme.handlers.onPlayerKilledPlayer;*/
+import com.me.actionbarxtreme.handlers.onPlayerKilledPlayer;
 import com.me.actionbarxtreme.utils.tabComplete;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import org.bukkit.Bukkit;
@@ -37,6 +37,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
@@ -56,13 +57,13 @@ import java.util.*;
 public class ActionBarXtreme extends JavaPlugin implements Listener {
 
     public BukkitTask task;
-    /*public onPlayerKick onPlayerKick;
+    public onPlayerKick onPlayerKick;
     public onPlayerBan onPlayerBan;
     public onDragonDeath onDragonDeath;
     public onWitherDeath onWitherDeath;
     public onElderGuardianDeath onElderGuardianDeath;
     public onWardenDeath onWardenDeath;
-    public onPlayerKilledPlayer onPlayerKilledPlayer;*/
+    public onPlayerKilledPlayer onPlayerKilledPlayer;
 
 
     public permBarOverrideAnnounce permBarOverrideAnnounce;
@@ -84,7 +85,7 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
         logging.log(logging.LogLevel.DEBUG, "[ABX] Server version: " + Bukkit.getVersion());
 
         logging.log(logging.LogLevel.INFO, "[ABX] Loading bStats...");
-        /* Metrics metrics = new Metrics(this, 19264); */
+        //Metrics metrics = new Metrics(this, 19264);
         logging.log(logging.LogLevel.INFO, "[ABX] bStats loaded successfully!");
 
 
@@ -160,13 +161,13 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
 
         permBarOverrideAnnounce permBarOverrideAnnounce = new permBarOverrideAnnounce(ActionBarXtreme.this);
 
-        /*onPlayerBan = new onPlayerBan(this, permBarOverrideAnnounce);
+        onPlayerBan = new onPlayerBan(this, permBarOverrideAnnounce);
         onDragonDeath = new onDragonDeath(this, permBarOverrideAnnounce);
         onWitherDeath = new onWitherDeath(this, permBarOverrideAnnounce);
         onPlayerKick = new onPlayerKick(this, permBarOverrideAnnounce);
         onElderGuardianDeath = new onElderGuardianDeath(this, permBarOverrideAnnounce);
         onWardenDeath = new onWardenDeath(this, permBarOverrideAnnounce);
-        onPlayerKilledPlayer = new onPlayerKilledPlayer(this, permBarOverrideAnnounce);*/
+        onPlayerKilledPlayer = new onPlayerKilledPlayer(this, permBarOverrideAnnounce);
 
 
         tabComplete tabComplete = new tabComplete();
@@ -175,9 +176,9 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
         logging.log(logging.LogLevel.INFO, "[ABX] Loading" + /*"events and" +*/ " commands...");
 
         CommandExecutor MainCommandExectuer = new maincmd(this, new permBarOverrideAnnounce
-                (ActionBarXtreme.this)/*, new eventForce(this,
+                (ActionBarXtreme.this), new eventForce(this,
                 onPlayerBan, onDragonDeath, onWitherDeath, onPlayerKick,
-                onElderGuardianDeath, onWardenDeath, onPlayerKilledPlayer)*/);
+                onElderGuardianDeath, onWardenDeath, onPlayerKilledPlayer));
 
         getCommand("abx").setExecutor(MainCommandExectuer);
         getCommand("abx").setTabCompleter(tabComplete);
@@ -206,13 +207,13 @@ public class ActionBarXtreme extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(listener, this);
 
 
-        /*Bukkit.getPluginManager().registerEvents(onPlayerKick, this);
+        Bukkit.getPluginManager().registerEvents(onPlayerKick, this);
         Bukkit.getPluginManager().registerEvents(onPlayerBan, this);
         Bukkit.getPluginManager().registerEvents(onDragonDeath, this);
         Bukkit.getPluginManager().registerEvents(onWitherDeath, this);
         Bukkit.getPluginManager().registerEvents(onElderGuardianDeath, this);
         Bukkit.getPluginManager().registerEvents(onWardenDeath, this);
-        Bukkit.getPluginManager().registerEvents(onPlayerKilledPlayer, this);*/
+        Bukkit.getPluginManager().registerEvents(onPlayerKilledPlayer, this);
 
 
 

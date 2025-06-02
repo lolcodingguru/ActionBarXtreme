@@ -24,7 +24,7 @@ public class logging {
                 Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&7" + message));
                 break;
             case DEBUG:
-                if(false) { // Manually change between true/false depending on if debug messages should be shown or not (for example, I'll set it to false for stable releases)
+                if(true) { // Manually change between true/false depending on if debug messages should be shown or not (for example, I'll set it to false for stable releases)
                     Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&b&lDEBUG&r&8] &f" + message));
                     break;
                 }
